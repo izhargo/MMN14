@@ -9,8 +9,8 @@ typedef union commandBitField
 	struct
 	{
 		unsigned int encodingType : 2;
-		unsigned int destinationOperand : 2;
-		unsigned int sourceOperand : 2;
+		unsigned int destinationOperandAddressing : 2;
+		unsigned int sourceOperandAddressing : 2;
 		unsigned int opcode : 4;
 		unsigned int unused : 4;
 	} cBitField;
@@ -26,6 +26,18 @@ typedef union registers
 	} r;
 	short fullReg;
 } registers;
+
+typedef union registersParam
+{
+	struct
+	{
+		unsigned int encodingType : 2;
+		unsigned int regSource : 4;
+		unsigned int regDestination : 4;
+		unsigned int unused : 6;
+	} regParam;
+	short fullRegParam;
+} registersParam;
 
 typedef union memoryWord
 {
@@ -63,11 +75,26 @@ opcodeStruct opcodesArray[16] =
 	{15 , "stop"},
 };
 
-typedef enum {Absolute = 0 , External = 1 , Relocatable = 2} encodingType;
-typedef enum {A = 0 , B = 1 , C = 2 , D = 3} wierdFourCountNums;
+typedef enum
+{
+	r0,
+	r1,
+	r2,
+	r3,
+	r4,
+	r5,
+	r6,
+	r7
+} eCpuRegisters;
+
+typedef enum {Absolute = 0 , External = 1 , Relocatable = 2} eEncodingType;
+typedef enum {Immediate = 0 , Direct = 1 , MarixAccess = 2 , DirectRegister = 3} eAddressingMethod;
+typedef enum {A = 0 , B = 1 , C = 2 , D = 3} eWierdFourCountNums;
 
 registers cpuRegisters[8];
 memoryWord cpuFullMemory[256];
 
 char* convertToWeirdFour(short);
+
+int IC;
 
