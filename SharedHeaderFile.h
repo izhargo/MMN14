@@ -97,4 +97,13 @@ memoryWord cpuFullMemory[256];
 char* convertToWeirdFour(short);
 
 int IC;
+int DC;
 
+typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
+typedef struct symbol{ /*a symbol in a linked list representing a symbol 								table*/ 
+	char* label;
+	int addresse;	
+	unsigned int action:1;
+	unsigned int external:1;
+	pSymbol	next;
+}symbol;
