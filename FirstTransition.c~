@@ -1,0 +1,8 @@
+#include "SharedHeaderFile.h"
+#include "FirstTransitionHeader.h";
+
+
+int main(){
+	DC = 0, IC = 0;
+	
+}
