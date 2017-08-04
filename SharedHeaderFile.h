@@ -32,12 +32,34 @@ typedef union registersParam
 	struct
 	{
 		unsigned int encodingType : 2;
-		unsigned int regSource : 4;
 		unsigned int regDestination : 4;
+		unsigned int regSource : 4;
 		unsigned int unused : 6;
 	} regParam;
 	short fullRegParam;
 } registersParam;
+
+typedef union valueParam
+{
+	struct
+	{
+		unsigned int encodingType : 2;
+		short numericValue : 8;
+		unsigned int unused : 6;
+	} valParam;
+	short fullValueParam;
+} valueParam;
+
+typedef union symbolParam
+{
+	struct
+	{
+		unsigned int encodingType : 2;
+		short addressValue : 8;
+		unsigned int unused : 6;
+	} symParam;
+	short fullSymbolParam;
+} symbolParam;
 
 typedef union memoryWord
 {
@@ -100,10 +122,20 @@ int IC;
 int DC;
 
 typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
+
 typedef struct symbol{ /*a symbol in a linked list representing a symbol 								table*/ 
+
 	char* label;
+
 	int addresse;	
+
 	unsigned int action:1;
+
 	unsigned int external:1;
+
 	pSymbol	next;
+
 }symbol;
+
+pSymbol SymbolTable = NULL;
+
