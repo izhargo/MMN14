@@ -26,3 +26,42 @@ char* convertToWeirdFour(short wordShort)
 	weirdFourWord[wordLoc] = 0;
 	return weirdFourWord;
 }
+
+void addError (Errorptr *head, Errorptr *last, errorType err, int numLine){
+	Errorptr temp,p;
+	temp = (Errorptr) malloc(sizeof(error_node));/* allocate memory for a new 														Error in list*/
+	if (!temp){
+		fprintf(stderr, "Memory allocation failed\n");
+		exit(0);
+	}
+	/*new item is put in a temporary node before entering the list*/
+	temp->description = err;
+	temp->lineNumber = numLine;
+	temp->next = NULL;
+	if (!(*head)){	/*insert to an empty list*/
+		*last = temp;
+		*head = temp;
+	}
+	else {	/*insert to a non-empty list */
+		p = *last;
+		p->next = temp;
+		*last = p->next;
+	}		
+}
+/*prints error trace stack*/ 
+void printErrorList(Errorptr head){
+	Errorptr p;
+	p = head;
+	if ((p != NULL) && (p->lineNumber==0)){
+		printf("%s\n",p->description); 	
+	} else 
+	{	
+		while(p != NULL){		
+			printf("%s has occured in line: %d\n", p->description, p->lineNumber);				
+			p=p->next;
+		}
+	}
+	printf("\n");
+	return;	
+}
+

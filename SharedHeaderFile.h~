@@ -32,12 +32,34 @@ typedef union registersParam
 	struct
 	{
 		unsigned int encodingType : 2;
-		unsigned int regSource : 4;
 		unsigned int regDestination : 4;
+		unsigned int regSource : 4;
 		unsigned int unused : 6;
 	} regParam;
 	short fullRegParam;
 } registersParam;
+
+typedef union valueParam
+{
+	struct
+	{
+		unsigned int encodingType : 2;
+		short numericValue : 8;
+		unsigned int unused : 6;
+	} valParam;
+	short fullValueParam;
+} valueParam;
+
+typedef union symbolParam
+{
+	struct
+	{
+		unsigned int encodingType : 2;
+		short addressValue : 8;
+		unsigned int unused : 6;
+	} symParam;
+	short fullSymbolParam;
+} symbolParam;
 
 typedef union memoryWord
 {
@@ -97,12 +119,44 @@ memoryWord cpuFullMemory[256];
 char* convertToWeirdFour(short);
 
 int IC;
+int DC;
 
-typedef struct symbol* pSymbol;
-typedef struct symbol{
+typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
+
+typedef struct symbol{ /*a symbol in a linked list representing a symbol 								table*/ 
+
 	char* label;
+
 	int addresse;	
+
 	unsigned int action:1;
+
 	unsigned int external:1;
+
 	pSymbol	next;
+
 }symbol;
+
+pSymbol SymbolTable;
+pSymbol SymbolTableLast;
+
+typedef enum errors {WRONG_COMMAND_LINE_INPUT ,WRONG_INSTRUCTION_NAME, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_AN_INTEGER, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_A_STRING, WRONG_OPERAND_SHOULD_INPUT_A_REGISTER_ADDRESS, WRONG_OPERAND_SHOULD_INPUT_A_MATRIX_REFERENCE, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
+  
+typedef struct errorNode* Errorptr;
+
+typedef struct errorNode{
+
+	errorType description;
+
+	int lineNumber;
+
+	Errorptr next;
+
+} error_node;
+
+Errorptr errorList;
+Errorptr errorListLast;
+
+/*function adds an error to the linked list of errors in the assembly program*/ 
+void addError (Errorptr *head, Errorptr *last, errorType err, int numLine);
+void printErrorList(Errorptr head);

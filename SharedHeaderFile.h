@@ -137,5 +137,26 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 }symbol;
 
-pSymbol SymbolTable = NULL;
+pSymbol SymbolTable;
+pSymbol SymbolTableLast;
 
+typedef enum errors {NONE, WRONG_COMMAND_LINE_INPUT ,WRONG_INSTRUCTION_NAME, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_AN_INTEGER, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_A_STRING, WRONG_OPERAND_SHOULD_INPUT_A_REGISTER_ADDRESS, WRONG_OPERAND_SHOULD_INPUT_A_MATRIX_REFERENCE, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
+  
+typedef struct errorNode* Errorptr;
+
+typedef struct errorNode{
+
+	errorType description;
+
+	int lineNumber;
+
+	Errorptr next;
+
+} error_node;
+
+Errorptr errorList;
+Errorptr errorListLast;
+
+/*function adds an error to the linked list of errors in the assembly program*/ 
+void addError (Errorptr *head, Errorptr *last, errorType err, int numLine);
+void printErrorList(Errorptr head);
