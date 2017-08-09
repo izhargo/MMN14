@@ -77,25 +77,7 @@ typedef struct
 	char* opcodeName;
 } opcodeStruct;
 
-opcodeStruct opcodesArray[16] = 
-{
-	{0 , "mov"},
-	{1 , "cmp"},
-	{2 , "add"},
-	{3 , "sub"},
-	{4 , "not"},
-	{5 , "clr"},
-	{6 , "lea"},
-	{7 , "inc"},
-	{8 , "dec"},
-	{9 , "jmp"},
-	{10 , "bne"},
-	{11 , "red"},
-	{12 , "prn"},
-	{13 , "jsr"},
-	{14 , "rts"},
-	{15 , "stop"},
-};
+extern opcodeStruct opcodesArray[16];
 
 typedef enum
 {
@@ -118,8 +100,8 @@ memoryWord cpuFullMemory[256];
 
 char* convertToWeirdFour(short);
 
-int IC;
-int DC;
+extern int IC;
+extern int DC;
 
 typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
 
@@ -137,10 +119,10 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 }symbol;
 
-pSymbol SymbolTable;
-pSymbol SymbolTableLast;
+extern pSymbol SymbolTable;
+extern pSymbol SymbolTableLast;
 
-typedef enum errors {WRONG_COMMAND_LINE_INPUT ,WRONG_INSTRUCTION_NAME, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_AN_INTEGER, WRONG_TYPE_OF_INPUT_SHOULD_INPUT_A_STRING, WRONG_OPERAND_SHOULD_INPUT_A_REGISTER_ADDRESS, WRONG_OPERAND_SHOULD_INPUT_A_MATRIX_REFERENCE, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
+typedef enum errors {NONE, WRONG_COMMAND_LINE_INPUT ,WRONG_INPUT_IN_LABEL, WRONG_INSTRUCTION_NAME, WRONG_INPUT_VALUE, WRONG_OPERAND, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
   
 typedef struct errorNode* Errorptr;
 
@@ -154,9 +136,10 @@ typedef struct errorNode{
 
 } error_node;
 
-Errorptr errorList;
-Errorptr errorListLast;
+extern Errorptr errorList;
+extern Errorptr errorListLast;
 
 /*function adds an error to the linked list of errors in the assembly program*/ 
 void addError (Errorptr *head, Errorptr *last, errorType err, int numLine);
 void printErrorList(Errorptr head);
+const char *getError(errorType e);

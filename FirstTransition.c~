@@ -1,37 +1,45 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
 
-int i;
-char *token;
-FILE **files; /* a pointer to the files given as input from command-line*/ 
-errorType error; /* used for errorType enum*/ 
+extern int flagLabel;
 
+void fileTransition(FILE *fd){}
 
-int main(int argc, char* argv[]){
-	extern Errorptr errorList;
-	extern Errorptr errorListLast;	
-	DC = 0, IC = 0;
-	/*First, check for command-line argument error. If An error is found, 			program stops immediately*/
-	if (argc<=1){
-		error = WRONG_COMMAND_LINE_INPUT;
-		addError(&errorList, &errorListLast, error, 0);
-		printErrorList(errorList);
-		exit(0);
+char *isLabel(char *word){
+	int i = 1;	
+	if (isalpha(word[0]) == 0){
+        flagLabel = 0;
+		return NULL;
+	} else{
+		while (word[i]){
+			if (isalnum(word[i]) == 0){
+				flagLabel = 0;
+				return NULL;			
+			} else {
+				i++;
+			}
+		}
+		flagLabel = 1;		
+		return word;
 	}
-	for (i=1;i<argc;i++){
-		token = strtok(argv[i],".");
-		token = strtok(NULL ,".");
-		if (strcmp(token,"as") != 0){
-			error = WRONG_COMMAND_LINE_INPUT;
-			addError(&errorList, &errorListLast, error, 0);
-			printErrorList(errorList);
-			exit(0);
-		}	
-	}
-	printf("Let's Start!\n");
-	return 0;	
+}
+
+void analizeLine(char *line){
+    char *word1;
+    char *checker;
+    char *restOfLine;
+    char *label;
+    checker = strchr(line,':');
+	if (checker != NULL){ /* ":" appears in line*/
+        word1 = strtok(line, ":");
+        label = isLabel(word1);
+        restOfLine = strtok(NULL,":");
+	} else{ /* ":" doesn't appear in line"*/
+        restOfLine = line;
+	}    
 }
 
