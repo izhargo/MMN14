@@ -22,7 +22,7 @@ void movTwoRegisterCmd(parms data)
 	registersParam srcDstRegistersParam;
 
 	newMovCommand.fullCommandInt = 0;
-	newMovCommand.cBitField.encodingType = External;
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -31,7 +31,7 @@ void movTwoRegisterCmd(parms data)
 	IC++;
 
 	srcDstRegistersParam.fullRegParam = 0;
-	srcDstRegistersParam.regParam.encodingType = External;
+	srcDstRegistersParam.regParam.encodingType = Absolute;
 	srcDstRegistersParam.regParam.regSource = data.eRegSource;
 	srcDstRegistersParam.regParam.regDestination = data.eRegDestination;
 
@@ -47,26 +47,26 @@ void movRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newMovCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newMovCommand.cBitField.encodingType = External;
-	else
-		newMovCommand.cBitField.encodingType = Relocatable;
+
 	newMovCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.destinationOperandAddressing = Direct;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
-
+	newMovCommand.cBitField.encodingType = Absolute;
 	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
 	IC++;
 
 	sourceRegisterParam.fullRegParam = 0;
-	sourceRegisterParam.regParam.encodingType = External;
+	sourceRegisterParam.regParam.encodingType = Absolute;
 	sourceRegisterParam.regParam.regSource = data.eRegSource;
 
 	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
 	IC++;
 
-	destinationSymbolParam.fullSymbolParam = 0;
-	destinationSymbolParam.symParam.encodingType = Relocatable;
+	destinationSymbolParam.fullSymbolParam = 0;	
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
@@ -81,7 +81,7 @@ void movSymbolRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newMovCommand.fullCommandInt = 0;
-	newMovCommand.cBitField.encodingType = External;
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.cBitField.sourceOperandAddressing = Direct;
 	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -90,14 +90,17 @@ void movSymbolRegisterCmd(parms data)
 	IC++;
 
 	sourceSymbolParam.fullSymbolParam = 0;
-	sourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		sourceSymbolParam.symParam.encodingType = External;
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
@@ -110,12 +113,9 @@ void movSymbolSymbolCmd(parms data)
 	commandBitField newMovCommand;
 	symbolParam SourceSymbolParam;
 	symbolParam DesinationSymbolParam;
-
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newMovCommand.cBitField.encodingType = External;
-	else
-		newMovCommand.cBitField.encodingType = Relocatable;
+	
 	newMovCommand.cBitField.sourceOperandAddressing = Direct;
 	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -124,14 +124,20 @@ void movSymbolSymbolCmd(parms data)
 	IC++;
 
 	SourceSymbolParam.fullSymbolParam = 0;
-	SourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+		if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -146,7 +152,7 @@ void movValueRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newMovCommand.fullCommandInt = 0;
-	newMovCommand.cBitField.encodingType = External;
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.cBitField.sourceOperandAddressing = Immediate;
 	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -162,7 +168,7 @@ void movValueRegisterCmd(parms data)
 	IC++;
 
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
@@ -177,10 +183,7 @@ void movValueSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newMovCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newMovCommand.cBitField.encodingType = External;
-	else
-		newMovCommand.cBitField.encodingType = Relocatable;
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.cBitField.sourceOperandAddressing = Direct;
 	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -196,7 +199,10 @@ void movValueSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType  = External;
+	else
+		DesinationSymbolParam.symParam.encodingType  = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -210,7 +216,7 @@ void cmpTwoRegisterCmd(parms data)
 	registersParam srcDstRegistersParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	newCmpCommand.cBitField.encodingType = External;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -219,7 +225,7 @@ void cmpTwoRegisterCmd(parms data)
 	IC++;
 
 	srcDstRegistersParam.fullRegParam = 0;
-	srcDstRegistersParam.regParam.encodingType = External;
+	srcDstRegistersParam.regParam.encodingType = Absolute;
 	srcDstRegistersParam.regParam.regSource = data.eRegSource;
 	srcDstRegistersParam.regParam.regDestination = data.eRegDestination;
 
@@ -235,10 +241,7 @@ void cmpRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newCmpCommand.cBitField.encodingType = External;
-	else
-		newCmpCommand.cBitField.encodingType = Relocatable;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.destinationOperandAddressing = Direct;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -247,14 +250,17 @@ void cmpRegisterSymbolCmd(parms data)
 	IC++;
 
 	sourceRegisterParam.fullRegParam = 0;
-	sourceRegisterParam.regParam.encodingType = External;
+	sourceRegisterParam.regParam.encodingType = Absolute;
 	sourceRegisterParam.regParam.regSource = data.eRegSource;
 
 	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
 	IC++;
 
 	destinationSymbolParam.fullSymbolParam = 0;
-	destinationSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
@@ -269,7 +275,7 @@ void cmpSymbolRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	newCmpCommand.cBitField.encodingType = External;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
 	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -278,14 +284,17 @@ void cmpSymbolRegisterCmd(parms data)
 	IC++;
 
 	sourceSymbolParam.fullSymbolParam = 0;
-	sourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		sourceSymbolParam.symParam.encodingType = External;
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
@@ -300,10 +309,7 @@ void cmpSymbolSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newCmpCommand.cBitField.encodingType = External;
-	else
-		newCmpCommand.cBitField.encodingType = Relocatable;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
 	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -312,14 +318,20 @@ void cmpSymbolSymbolCmd(parms data)
 	IC++;
 
 	SourceSymbolParam.fullSymbolParam = 0;
-	SourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -334,7 +346,7 @@ void cmpValueRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	newCmpCommand.cBitField.encodingType = External;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = Immediate;
 	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -350,7 +362,7 @@ void cmpValueRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -365,10 +377,7 @@ void cmpValueSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newCmpCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newCmpCommand.cBitField.encodingType = External;
-	else
-		newCmpCommand.cBitField.encodingType = Relocatable;
+	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
 	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -384,7 +393,10 @@ void cmpValueSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -398,7 +410,7 @@ void addTwoRegisterCmd(parms data)
 	registersParam srcDstRegistersParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.encodingType = External;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
@@ -407,7 +419,7 @@ void addTwoRegisterCmd(parms data)
 	IC++;
 
 	srcDstRegistersParam.fullRegParam = 0;
-	srcDstRegistersParam.regParam.encodingType = External;
+	srcDstRegistersParam.regParam.encodingType = Absolute;
 	srcDstRegistersParam.regParam.regSource = data.eRegSource;
 	srcDstRegistersParam.regParam.regDestination = data.eRegDestination;
 
@@ -423,11 +435,8 @@ void addRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newAddCommand.cBitField.encodingType = External;
-	else
-		newAddCommand.cBitField.encodingType = Relocatable;
 	newAddCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
@@ -435,14 +444,17 @@ void addRegisterSymbolCmd(parms data)
 	IC++;
 
 	sourceRegisterParam.fullRegParam = 0;
-	sourceRegisterParam.regParam.encodingType = External;
+	sourceRegisterParam.regParam.encodingType = Absolute;
 	sourceRegisterParam.regParam.regSource = data.eRegSource;
 
 	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
 	IC++;
 
 	destinationSymbolParam.fullSymbolParam = 0;
-	destinationSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
@@ -457,7 +469,7 @@ void addSymbolRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.encodingType = External;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Direct;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -466,14 +478,17 @@ void addSymbolRegisterCmd(parms data)
 	IC++;
 
 	sourceSymbolParam.fullSymbolParam = 0;
-	sourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		sourceSymbolParam.symParam.encodingType = External;
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
@@ -488,11 +503,8 @@ void addSymbolSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newAddCommand.cBitField.encodingType = External;
-	else
-		newAddCommand.cBitField.encodingType = Relocatable;
 	newAddCommand.cBitField.sourceOperandAddressing = Direct;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
@@ -500,14 +512,20 @@ void addSymbolSymbolCmd(parms data)
 	IC++;
 
 	SourceSymbolParam.fullSymbolParam = 0;
-	SourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -522,7 +540,7 @@ void addValueRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.encodingType = External;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Immediate;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
@@ -538,7 +556,7 @@ void addValueRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -553,10 +571,7 @@ void addValueSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newAddCommand.cBitField.encodingType = External;
-	else
-		newAddCommand.cBitField.encodingType = Relocatable;
+	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Direct;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -572,7 +587,10 @@ void addValueSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
@@ -586,7 +604,7 @@ void subTwoRegisterCmd(parms data)
 	registersParam srcDstRegistersParam;
 
 	newSubCommand.fullCommandInt = 0;
-	newSubCommand.cBitField.encodingType = External;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
@@ -595,7 +613,7 @@ void subTwoRegisterCmd(parms data)
 	IC++;
 
 	srcDstRegistersParam.fullRegParam = 0;
-	srcDstRegistersParam.regParam.encodingType = External;
+	srcDstRegistersParam.regParam.encodingType = Absolute;
 	srcDstRegistersParam.regParam.regSource = data.eRegSource;
 	srcDstRegistersParam.regParam.regDestination = data.eRegDestination;
 
@@ -611,10 +629,7 @@ void subRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newSubCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newSubCommand.cBitField.encodingType = External;
-	else
-		newSubCommand.cBitField.encodingType = Relocatable;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.destinationOperandAddressing = Direct;
 	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -623,17 +638,63 @@ void subRegisterSymbolCmd(parms data)
 	IC++;
 
 	sourceRegisterParam.fullRegParam = 0;
-	sourceRegisterParam.regParam.encodingType = External;
+	sourceRegisterParam.regParam.encodingType = Absolute;
 	sourceRegisterParam.regParam.regSource = data.eRegSource;
 
 	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
 	IC++;
 
 	destinationSymbolParam.fullSymbolParam = 0;
-	destinationSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a register as its source parameter and a matrix parameter as its destination parameter*/
+void subRegisterMatrixCmd(parms data)
+{
+	commandBitField newSubCommand;
+	registersParam sourceRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -645,7 +706,7 @@ void subSymbolRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newSubCommand.fullCommandInt = 0;
-	newSubCommand.cBitField.encodingType = External;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -654,17 +715,118 @@ void subSymbolRegisterCmd(parms data)
 	IC++;
 
 	sourceSymbolParam.fullSymbolParam = 0;
-	sourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		sourceSymbolParam.symParam.encodingType = External;
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a matrix paramater as its source parameter and a register as its destination parameter*/
+void subMatrixRegisterCmd(parms data)
+{
+	commandBitField newSubCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	registersParam destinationRegisterParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	destinationRegisterParam.fullRegParam = 0;
+	destinationRegisterParam.regParam.encodingType = Absolute;
+	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
+
+	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
+void suMatrixMatrixCmd(parms data)
+{
+	commandBitField newSubCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -676,10 +838,7 @@ void subSymbolSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newSubCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newSubCommand.cBitField.encodingType = External;
-	else
-		newSubCommand.cBitField.encodingType = Relocatable;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -688,17 +847,115 @@ void subSymbolSymbolCmd(parms data)
 	IC++;
 
 	SourceSymbolParam.fullSymbolParam = 0;
-	SourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a matrix paramater as its source parameter and a symbol parameter as its destination parameter*/
+void suMatrixSymbolCmd(parms data)
+{
+	commandBitField newSubCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationSymbolParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.destinationOperandAddressing = Direct;
+	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationSymbolParam.fullSymbolParam = 0;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a symbol paramater as its source parameter and a matrix parameter as its destination parameter*/
+void subSymbolMatrixCmd(parms data)
+{
+	commandBitField newSubCommand;
+	symbolParam SourceSymbolParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = Direct;
+	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	SourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -711,7 +968,7 @@ void subValueRegisterCmd(parms data)
 	
 
 	newSubCommand.fullCommandInt = 0;
-	newSubCommand.cBitField.encodingType = External;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Immediate;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
@@ -727,7 +984,7 @@ void subValueRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -742,10 +999,7 @@ void subValueSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newSubCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newSubCommand.cBitField.encodingType = External;
-	else
-		newSubCommand.cBitField.encodingType = Relocatable;
+	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
@@ -761,10 +1015,56 @@ void subValueSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a sub command with a numeric value as its source parameter and a matrix parameter as its destination parameter*/
+void subValueMatrixCmd(parms data)
+{
+	commandBitField newSubCommand;
+	valueParam sourceValueParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newSubCommand.fullCommandInt = 0;
+	newSubCommand.cBitField.encodingType = Absolute;
+	newSubCommand.cBitField.sourceOperandAddressing = Immediate;
+	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -775,7 +1075,7 @@ void leaTwoRegisterCmd(parms data)
 	registersParam srcDstRegistersParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	newLeaCommand.cBitField.encodingType = External;
+	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
@@ -784,7 +1084,7 @@ void leaTwoRegisterCmd(parms data)
 	IC++;
 
 	srcDstRegistersParam.fullRegParam = 0;
-	srcDstRegistersParam.regParam.encodingType = External;
+	srcDstRegistersParam.regParam.encodingType = Absolute;
 	srcDstRegistersParam.regParam.regSource = data.eRegSource;
 	srcDstRegistersParam.regParam.regDestination = data.eRegDestination;
 
@@ -800,10 +1100,7 @@ void leaRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newLeaCommand.cBitField.encodingType = External;
-	else
-		newLeaCommand.cBitField.encodingType = Relocatable;
+	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
 	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -812,17 +1109,109 @@ void leaRegisterSymbolCmd(parms data)
 	IC++;
 
 	sourceRegisterParam.fullRegParam = 0;
-	sourceRegisterParam.regParam.encodingType = External;
+	sourceRegisterParam.regParam.encodingType = Absolute;
 	sourceRegisterParam.regParam.regSource = data.eRegSource;
 
 	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
 	IC++;
 
 	destinationSymbolParam.fullSymbolParam = 0;
-	destinationSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a matrix parameter as its source parameter and a symbol parameter as its destination parameter*/
+void leaMatrixSymbolCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam destinationSymbolParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
+	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+
+	destinationSymbolParam.fullSymbolParam = 0;
+	if(data.symbolDestination->external)
+		destinationSymbolParam.symParam.encodingType = External;
+	else
+		destinationSymbolParam.symParam.encodingType = Relocatable;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a register as its source parameter and a matrix parameter as its destination parameter*/
+void leaRegisterMatrixCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	registersParam sourceRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -834,7 +1223,7 @@ void leaSymbolRegisterCmd(parms data)
 	registersParam destinationRegisterParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	newLeaCommand.cBitField.encodingType = External;
+	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
 	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
@@ -843,14 +1232,60 @@ void leaSymbolRegisterCmd(parms data)
 	IC++;
 
 	sourceSymbolParam.fullSymbolParam = 0;
-	sourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		sourceSymbolParam.symParam.encodingType = External;
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	destinationRegisterParam.fullRegParam = 0;
-	destinationRegisterParam.regParam.encodingType = External;
+	destinationRegisterParam.regParam.encodingType = Absolute;
+	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
+
+	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a matrix paramater as its source parameter and a register as its destination parameter*/
+void leaMatrixRegisterCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	registersParam destinationRegisterParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	destinationRegisterParam.fullRegParam = 0;
+	destinationRegisterParam.regParam.encodingType = Absolute;
 	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
@@ -865,29 +1300,133 @@ void leaSymbolSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newLeaCommand.cBitField.encodingType = External;
-	else
-		newLeaCommand.cBitField.encodingType = Relocatable;
+	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
-	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
 	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
 
 	SourceSymbolParam.fullSymbolParam = 0;
-	SourceSymbolParam.symParam.encodingType = Relocatable;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a symbol paramater as its source parameter and a matrix parameter as its destination parameter*/
+void leaSymbolMatrixCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	symbolParam SourceSymbolParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
+	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	SourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+		SourceSymbolParam.symParam.encodingType = External;
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
+void leaMatrixMatrixCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -899,7 +1438,7 @@ void leaValueRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	newLeaCommand.cBitField.encodingType = External;
+	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Immediate;
 	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
@@ -915,7 +1454,7 @@ void leaValueRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -930,12 +1469,9 @@ void leaValueSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newLeaCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newLeaCommand.cBitField.encodingType = External;
-	else
-		newLeaCommand.cBitField.encodingType = Relocatable;
-	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
-	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = Immediate;
+	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
 	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
@@ -949,10 +1485,56 @@ void leaValueSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a lea command with a numeric value as its source parameter and a matrix parameter as its destination parameter*/
+void leaValueMatrixCmd(parms data)
+{
+	commandBitField newLeaCommand;
+	valueParam sourceValueParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newLeaCommand.fullCommandInt = 0;
+	newLeaCommand.cBitField.encodingType = Absolute;
+	newLeaCommand.cBitField.sourceOperandAddressing = Immediate;
+	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -963,7 +1545,7 @@ void notRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newNotCommand.fullCommandInt = 0;
-	newNotCommand.cBitField.encodingType = External;
+	newNotCommand.cBitField.encodingType = Absolute;
 	newNotCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newNotCommand.cBitField.opcode = opcodesArray[4].opcodeNum;
 
@@ -971,7 +1553,7 @@ void notRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -985,10 +1567,7 @@ void notSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newNotCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newNotCommand.cBitField.encodingType = External;
-	else
-		newNotCommand.cBitField.encodingType = Relocatable;
+	newNotCommand.cBitField.encodingType = Absolute;
 	newNotCommand.cBitField.destinationOperandAddressing = Direct;
 	newNotCommand.cBitField.opcode = opcodesArray[4].opcodeNum;
 
@@ -996,10 +1575,47 @@ void notSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a not command with a matrix paramater as its destination parameter*/
+void notMatrixCmd(parms data)
+{
+	commandBitField newNotCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newNotCommand.fullCommandInt = 0;
+	newNotCommand.cBitField.encodingType = Absolute;
+	newNotCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newNotCommand.cBitField.opcode = opcodesArray[4].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newNotCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1010,7 +1626,7 @@ void clrRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newClrCommand.fullCommandInt = 0;
-	newClrCommand.cBitField.encodingType = External;
+	newClrCommand.cBitField.encodingType = Absolute;
 	newClrCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newClrCommand.cBitField.opcode = opcodesArray[5].opcodeNum;
 
@@ -1018,7 +1634,7 @@ void clrRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1032,10 +1648,7 @@ void clrSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newClrCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newClrCommand.cBitField.encodingType = External;
-	else
-		newClrCommand.cBitField.encodingType = Relocatable;
+	newClrCommand.cBitField.encodingType = Absolute;
 	newClrCommand.cBitField.destinationOperandAddressing = Direct;
 	newClrCommand.cBitField.opcode = opcodesArray[5].opcodeNum;
 
@@ -1043,10 +1656,47 @@ void clrSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a clr command with a matrix paramater as its destination parameter*/
+void clrMatrixCmd(parms data)
+{
+	commandBitField newClrCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newClrCommand.fullCommandInt = 0;
+	newClrCommand.cBitField.encodingType = Absolute;
+	newClrCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newClrCommand.cBitField.opcode = opcodesArray[5].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newClrCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1057,7 +1707,7 @@ void incRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newIncCommand.fullCommandInt = 0;
-	newIncCommand.cBitField.encodingType = External;
+	newIncCommand.cBitField.encodingType = Absolute;
 	newIncCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newIncCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1065,7 +1715,7 @@ void incRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1079,10 +1729,7 @@ void incSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newIncCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newIncCommand.cBitField.encodingType = External;
-	else
-		newIncCommand.cBitField.encodingType = Relocatable;
+	newIncCommand.cBitField.encodingType = Absolute;
 	newIncCommand.cBitField.destinationOperandAddressing = Direct;
 	newIncCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1090,10 +1737,47 @@ void incSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a inc command with a matrix paramater as its destination parameter*/
+void incMatrixCmd(parms data)
+{
+	commandBitField newIncCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newIncCommand.fullCommandInt = 0;
+	newIncCommand.cBitField.encodingType = Absolute;
+	newIncCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newIncCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newIncCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1104,7 +1788,7 @@ void decRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newDecCommand.fullCommandInt = 0;
-	newDecCommand.cBitField.encodingType = External;
+	newDecCommand.cBitField.encodingType = Absolute;
 	newDecCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newDecCommand.cBitField.opcode = opcodesArray[8].opcodeNum;
 
@@ -1112,7 +1796,7 @@ void decRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1126,10 +1810,7 @@ void decSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newDecCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newDecCommand.cBitField.encodingType = External;
-	else
-		newDecCommand.cBitField.encodingType = Relocatable;
+	newDecCommand.cBitField.encodingType = Absolute;
 	newDecCommand.cBitField.destinationOperandAddressing = Direct;
 	newDecCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1137,10 +1818,47 @@ void decSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a dec command with a matrix paramater as its destination parameter*/
+void decMatrixCmd(parms data)
+{
+	commandBitField newDecCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newDecCommand.fullCommandInt = 0;
+	newDecCommand.cBitField.encodingType = Absolute;
+	newDecCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newDecCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newDecCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1151,7 +1869,7 @@ void jmpRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newJmpCommand.fullCommandInt = 0;
-	newJmpCommand.cBitField.encodingType = External;
+	newJmpCommand.cBitField.encodingType = Absolute;
 	newJmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newJmpCommand.cBitField.opcode = opcodesArray[9].opcodeNum;
 
@@ -1159,7 +1877,7 @@ void jmpRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1173,10 +1891,7 @@ void jmpSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newJmpCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newJmpCommand.cBitField.encodingType = External;
-	else
-		newJmpCommand.cBitField.encodingType = Relocatable;
+	newJmpCommand.cBitField.encodingType = Absolute;
 	newJmpCommand.cBitField.destinationOperandAddressing = Direct;
 	newJmpCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1184,10 +1899,47 @@ void jmpSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+		if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a jmp command with a matrix paramater as its destination parameter*/
+void jmpMatrixCmd(parms data)
+{
+	commandBitField newJmpCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newJmpCommand.fullCommandInt = 0;
+	newJmpCommand.cBitField.encodingType = Absolute;
+	newJmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newJmpCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newJmpCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1198,7 +1950,7 @@ void bneRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newBneCommand.fullCommandInt = 0;
-	newBneCommand.cBitField.encodingType = External;
+	newBneCommand.cBitField.encodingType = Absolute;
 	newBneCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newBneCommand.cBitField.opcode = opcodesArray[10].opcodeNum;
 
@@ -1206,7 +1958,7 @@ void bneRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1220,10 +1972,7 @@ void bneSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newBneCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newBneCommand.cBitField.encodingType = External;
-	else
-		newBneCommand.cBitField.encodingType = Relocatable;
+	newBneCommand.cBitField.encodingType = Absolute;
 	newBneCommand.cBitField.destinationOperandAddressing = Direct;
 	newBneCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1231,10 +1980,47 @@ void bneSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a bne command with a matrix paramater as its destination parameter*/
+void bneMatrixCmd(parms data)
+{
+	commandBitField newBneCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newBneCommand.fullCommandInt = 0;
+	newBneCommand.cBitField.encodingType = Absolute;
+	newBneCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newBneCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newBneCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1245,7 +2031,7 @@ void redRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newRedCommand.fullCommandInt = 0;
-	newRedCommand.cBitField.encodingType = External;
+	newRedCommand.cBitField.encodingType = Absolute;
 	newRedCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newRedCommand.cBitField.opcode = opcodesArray[11].opcodeNum;
 
@@ -1253,7 +2039,7 @@ void redRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1267,10 +2053,7 @@ void redSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newRedCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newRedCommand.cBitField.encodingType = External;
-	else
-		newRedCommand.cBitField.encodingType = Relocatable;
+	newRedCommand.cBitField.encodingType = Absolute;
 	newRedCommand.cBitField.destinationOperandAddressing = Direct;
 	newRedCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1278,10 +2061,47 @@ void redSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a red command with a matrix paramater as its destination parameter*/
+void redMatrixCmd(parms data)
+{
+	commandBitField newRedCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newRedCommand.fullCommandInt = 0;
+	newRedCommand.cBitField.encodingType = Absolute;
+	newRedCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newRedCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newRedCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1292,7 +2112,7 @@ void prnRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newPrnCommand.fullCommandInt = 0;
-	newPrnCommand.cBitField.encodingType = External;
+	newPrnCommand.cBitField.encodingType = Absolute;
 	newPrnCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newPrnCommand.cBitField.opcode = opcodesArray[12].opcodeNum;
 
@@ -1300,7 +2120,7 @@ void prnRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1314,10 +2134,7 @@ void prnSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newPrnCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newPrnCommand.cBitField.encodingType = External;
-	else
-		newPrnCommand.cBitField.encodingType = Relocatable;
+	newPrnCommand.cBitField.encodingType = Absolute;
 	newPrnCommand.cBitField.destinationOperandAddressing = Direct;
 	newPrnCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1325,10 +2142,47 @@ void prnSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a prn command with a matrix paramater as its destination parameter*/
+void prnMatrixCmd(parms data)
+{
+	commandBitField newPrnCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newPrnCommand.fullCommandInt = 0;
+	newPrnCommand.cBitField.encodingType = Absolute;
+	newPrnCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newPrnCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newPrnCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -1339,7 +2193,7 @@ void jsrRegisterCmd(parms data)
 	registersParam destinationRegistersParam;
 
 	newJsrCommand.fullCommandInt = 0;
-	newJsrCommand.cBitField.encodingType = External;
+	newJsrCommand.cBitField.encodingType = Absolute;
 	newJsrCommand.cBitField.destinationOperandAddressing = DirectRegister;
 	newJsrCommand.cBitField.opcode = opcodesArray[13].opcodeNum;
 
@@ -1347,7 +2201,7 @@ void jsrRegisterCmd(parms data)
 	IC++;
 
 	destinationRegistersParam.fullRegParam = 0;
-	destinationRegistersParam.regParam.encodingType = External;
+	destinationRegistersParam.regParam.encodingType = Absolute;
 	destinationRegistersParam.regParam.regDestination = data.eRegDestination;
 
 	cpuFullMemory[IC].fullReg = destinationRegistersParam.fullRegParam;
@@ -1361,10 +2215,7 @@ void jsrSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newJsrCommand.fullCommandInt = 0;
-	if(data.symbolDestination->external)
-		newJsrCommand.cBitField.encodingType = External;
-	else
-		newJsrCommand.cBitField.encodingType = Relocatable;
+	newJsrCommand.cBitField.encodingType = Absolute;
 	newJsrCommand.cBitField.destinationOperandAddressing = Direct;
 	newJsrCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
 
@@ -1372,10 +2223,47 @@ void jsrSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-	DesinationSymbolParam.symParam.encodingType = External;
+	if(data.symbolDestination->external)
+		DesinationSymbolParam.symParam.encodingType = External;
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a jsr command with a matrix paramater as its destination parameter*/
+void jsrMatrixCmd(parms data)
+{
+	commandBitField newJsrCommand;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newJsrCommand.fullCommandInt = 0;
+	newJsrCommand.cBitField.encodingType = Absolute;
+	newJsrCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newJsrCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newJsrCommand.fullCommandInt;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
