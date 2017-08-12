@@ -64,12 +64,101 @@ void movRegisterSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;	
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command with a register as its source parameter and a matrix parameter as its destination parameter*/
+void movRegisterMatrixCmd(parms data)
+{
+	commandBitField newMovCommand;
+	registersParam sourceRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newMovCommand.fullCommandInt = 0;
+
+	newMovCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newMovCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newMovCommand.cBitField.encodingType = Absolute;
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command with a matrix paramater as its source parameter and a register as its destination parameter*/
+void movMatrixRegisterCmd(parms data)
+{
+	commandBitField newMovCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	registersParam destinationRegisterParam;
+
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
+	newMovCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+		SourceMatrixParam.symParam.encodingType = External;
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	destinationRegisterParam.fullRegParam = 0;
+	destinationRegisterParam.regParam.encodingType = Absolute;
+	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
+
+	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -91,7 +180,10 @@ void movSymbolRegisterCmd(parms data)
 
 	sourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -107,17 +199,118 @@ void movSymbolRegisterCmd(parms data)
 	IC++;
 }
 
-/*A function to add to the memory a mov command a two symbol paramater as its source parameter and a symbol parameter as its destination parameter*/
+/*A function to add to the memory a mov command with a symbol paramater as its source parameter and a matrix parameter as its destination parameter*/
+void movSymbolMatrixCmd(parms data)
+{
+	commandBitField newMovCommand;
+	symbolParam sourceSymbolParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
+	newMovCommand.cBitField.sourceOperandAddressing = Direct;
+	newMovCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	sourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+	{
+		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command a matrix paramater as its source parameter and a symbol parameter as its destination parameter*/
+void movMatrixSymbolCmd(parms data)
+{
+	commandBitField newMovCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationSymbolParam;
+
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
+	newMovCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.destinationOperandAddressing = Direct;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationSymbolParam.fullSymbolParam = 0;
+	if(data.symbolDestination->external)
+	{
+		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command a symbol paramater as its source parameter and a symbol parameter as its destination parameter*/
 void movSymbolSymbolCmd(parms data)
 {
 	commandBitField newMovCommand;
 	symbolParam SourceSymbolParam;
 	symbolParam DesinationSymbolParam;
-	newMovCommand.cBitField.encodingType = Absolute;
-	newMovCommand.fullCommandInt = 0;
 	
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
 	newMovCommand.cBitField.sourceOperandAddressing = Direct;
-	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newMovCommand.cBitField.destinationOperandAddressing = Direct;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
@@ -125,7 +318,10 @@ void movSymbolSymbolCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -134,13 +330,77 @@ void movSymbolSymbolCmd(parms data)
 	IC++;
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
-		if(data.symbolDestination->external)
+	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
+void movMatrixMatrixCmd(parms data)
+{
+	commandBitField newMovCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
+	newMovCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -184,8 +444,8 @@ void movValueSymbolCmd(parms data)
 
 	newMovCommand.fullCommandInt = 0;
 	newMovCommand.cBitField.encodingType = Absolute;
-	newMovCommand.cBitField.sourceOperandAddressing = Direct;
-	newMovCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newMovCommand.cBitField.sourceOperandAddressing = Immediate;
+	newMovCommand.cBitField.destinationOperandAddressing = Direct;
 	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
@@ -200,12 +460,61 @@ void movValueSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType  = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType  = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a mov command with a numeric value as its source parameter and a matrix parameter as its destination parameter*/
+void movValueMatrixCmd(parms data)
+{
+	commandBitField newMovCommand;
+	valueParam sourceValueParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newMovCommand.fullCommandInt = 0;
+	newMovCommand.cBitField.encodingType = Absolute;
+	newMovCommand.cBitField.sourceOperandAddressing = Immediate;
+	newMovCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newMovCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newMovCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -258,12 +567,107 @@ void cmpRegisterSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a register as its source parameter and a matrix parameter as its destination parameter*/
+void cmpRegisterMatrixCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	registersParam sourceRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newCmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a matrix paramater as its source parameter and a register as its destination parameter*/
+void cmpMatrixRegisterCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	registersParam destinationRegisterParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	destinationRegisterParam.fullRegParam = 0;
+	destinationRegisterParam.regParam.encodingType = Absolute;
+	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
+
+	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -285,7 +689,10 @@ void cmpSymbolRegisterCmd(parms data)
 
 	sourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -301,6 +708,110 @@ void cmpSymbolRegisterCmd(parms data)
 	IC++;
 }
 
+/*A function to add to the memory a cmp command with a symbol paramater as its source parameter and a matrix parameter as its destination parameter*/
+void cmpSymbolMatrixCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam SourceSymbolParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
+	newCmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	SourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+	{
+		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a matrix paramater as its source parameter and a symbol parameter as its destination parameter*/
+void cmpMatrixSymbolCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationSymbolParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.destinationOperandAddressing = Direct;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationSymbolParam.fullSymbolParam = 0;
+	if(data.symbolDestination->external)
+	{
+		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
 /*A function to add to the memory a cmp command with a symbol paramater as its source parameter and a symbol parameter as its destination parameter*/
 void cmpSymbolSymbolCmd(parms data)
 {
@@ -311,7 +822,7 @@ void cmpSymbolSymbolCmd(parms data)
 	newCmpCommand.fullCommandInt = 0;
 	newCmpCommand.cBitField.encodingType = Absolute;
 	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
-	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newCmpCommand.cBitField.destinationOperandAddressing = Direct;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
@@ -319,7 +830,10 @@ void cmpSymbolSymbolCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -329,12 +843,73 @@ void cmpSymbolSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
+void cmpMatrixMatrixCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+		DesinationMatrixParam.symParam.encodingType = External;
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -378,8 +953,8 @@ void cmpValueSymbolCmd(parms data)
 
 	newCmpCommand.fullCommandInt = 0;
 	newCmpCommand.cBitField.encodingType = Absolute;
-	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
-	newCmpCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newCmpCommand.cBitField.sourceOperandAddressing = Immediate;
+	newCmpCommand.cBitField.destinationOperandAddressing = Direct;
 	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
@@ -394,12 +969,61 @@ void cmpValueSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a numeric value as its source parameter and a matrix parameter as its destination parameter*/
+void cmpValueMatrixCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	valueParam sourceValueParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = Immediate;
+	newCmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -435,8 +1059,8 @@ void addRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.sourceOperandAddressing = DirectRegister;
-	newAddCommand.cBitField.encodingType = Absolute;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = DirectRegister;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
@@ -452,12 +1076,107 @@ void addRegisterSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a add command with a register as its source parameter and a matrix parameter as its destination parameter*/
+void addRegisterMatrixCmd(parms data)
+{
+	commandBitField newAddCommand;
+	registersParam sourceRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = DirectRegister;
+	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a add command with a matrix paramater as its source parameter and a register as its destination parameter*/
+void addMatrixRegisterCmd(parms data)
+{
+	commandBitField newAddCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	registersParam destinationRegisterParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.encodingType = Absolute;
+	newAddCommand.cBitField.sourceOperandAddressing = MatrixAccess;
+	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newAddCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	destinationRegisterParam.fullRegParam = 0;
+	destinationRegisterParam.regParam.encodingType = Absolute;
+	destinationRegisterParam.regParam.regDestination = data.eRegDestination;
+
+	cpuFullMemory[IC].fullReg = destinationRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -479,7 +1198,10 @@ void addSymbolRegisterCmd(parms data)
 
 	sourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -495,6 +1217,58 @@ void addSymbolRegisterCmd(parms data)
 	IC++;
 }
 
+/*A function to add to the memory a add command with a matrix paramater as its source parameter and a symbol parameter as its destination parameter*/
+void addMatrixSymbolCmd(parms data)
+{
+	commandBitField newAddCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationSymbolParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = MatrixAccess;
+	newAddCommand.cBitField.destinationOperandAddressing = Direct;
+	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationSymbolParam.fullSymbolParam = 0;
+	if(data.symbolDestination->external)
+	{
+		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
+	else
+		DesinationSymbolParam.symParam.encodingType = Relocatable;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
 /*A function to add to the memory a add command with a symbol paramater as its source parameter and a symbol parameter as its destination parameter*/
 void addSymbolSymbolCmd(parms data)
 {
@@ -503,9 +1277,9 @@ void addSymbolSymbolCmd(parms data)
 	symbolParam DesinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.sourceOperandAddressing = Direct;
-	newAddCommand.cBitField.encodingType = Absolute;
-	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = Direct;
+	newAddCommand.cBitField.destinationOperandAddressing = Direct;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
@@ -513,7 +1287,10 @@ void addSymbolSymbolCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -523,12 +1300,128 @@ void addSymbolSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a add command with a symbol paramater as its source parameter and a matrix parameter as its destination parameter*/
+void addSymbolMatrixCmd(parms data)
+{
+	commandBitField newAddCommand;
+	symbolParam SourceSymbolParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = Direct;
+	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	SourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+	{
+		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
+	else
+		SourceSymbolParam.symParam.encodingType = Relocatable;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a add command with a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
+void addMatrixMatrixCmd(parms data)
+{
+	commandBitField newAddCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
+	newAddCommand.cBitField.encodingType = MatrixAccess;
+	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -572,8 +1465,8 @@ void addValueSymbolCmd(parms data)
 
 	newAddCommand.fullCommandInt = 0;
 	newAddCommand.cBitField.encodingType = Absolute;
-	newAddCommand.cBitField.sourceOperandAddressing = Direct;
-	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newAddCommand.cBitField.sourceOperandAddressing = Immediate;
+	newAddCommand.cBitField.destinationOperandAddressing = Direct;
 	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
@@ -588,12 +1481,61 @@ void addValueSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
+	IC++;
+}
+
+/*A function to add to the memory a add command with a numeric value as its source parameter and a matrix parameter as its destination parameter*/
+void addValueMatrixCmd(parms data)
+{
+	commandBitField newAddCommand;
+	valueParam sourceValueParam;
+	symbolParam DesinationMatrixParam;
+	registersParam DestinationMatrixRegisterParam;
+
+	newAddCommand.fullCommandInt = 0;
+	newAddCommand.cBitField.encodingType = Absolute;
+	newAddCommand.cBitField.sourceOperandAddressing = Immediate;
+	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
+	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+	
+	DesinationMatrixParam.fullSymbolParam = 0;
+	if(data.matrixDestination->external)
+	{
+		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
+	else
+		DesinationMatrixParam.symParam.encodingType = Relocatable;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+
+	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
+	IC++;
+
+	DestinationMatrixRegisterParam.fullRegParam = 0;
+	DestinationMatrixRegisterParam.regParam.encodingType = Absolute;
+	DestinationMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowDestination;
+	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
+
+	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
 	IC++;
 }
 
@@ -646,7 +1588,10 @@ void subRegisterSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -681,7 +1626,10 @@ void subRegisterMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -716,7 +1664,10 @@ void subSymbolRegisterCmd(parms data)
 
 	sourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
+		addToExternFile(data.symbolSource);
 		sourceSymbolParam.symParam.encodingType = External;
+	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -751,7 +1702,10 @@ void subMatrixRegisterCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -776,7 +1730,7 @@ void subMatrixRegisterCmd(parms data)
 }
 
 /*A function to add to the memory a sub command with a matrix paramater as its source parameter and a matrix parameter as its destination parameter*/
-void suMatrixMatrixCmd(parms data)
+void subMatrixMatrixCmd(parms data)
 {
 	commandBitField newSubCommand;
 	symbolParam SourceMatrixParam;
@@ -795,7 +1749,10 @@ void suMatrixMatrixCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -813,7 +1770,10 @@ void suMatrixMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -840,7 +1800,7 @@ void subSymbolSymbolCmd(parms data)
 	newSubCommand.fullCommandInt = 0;
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
-	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newSubCommand.cBitField.destinationOperandAddressing = Direct;
 	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
@@ -848,7 +1808,10 @@ void subSymbolSymbolCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -858,7 +1821,10 @@ void subSymbolSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -868,7 +1834,7 @@ void subSymbolSymbolCmd(parms data)
 }
 
 /*A function to add to the memory a sub command with a matrix paramater as its source parameter and a symbol parameter as its destination parameter*/
-void suMatrixSymbolCmd(parms data)
+void subMatrixSymbolCmd(parms data)
 {
 	commandBitField newSubCommand;
 	symbolParam SourceMatrixParam;
@@ -886,7 +1852,10 @@ void suMatrixSymbolCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -904,7 +1873,10 @@ void suMatrixSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -932,7 +1904,10 @@ void subSymbolMatrixCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -942,7 +1917,10 @@ void subSymbolMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1000,8 +1978,8 @@ void subValueSymbolCmd(parms data)
 
 	newSubCommand.fullCommandInt = 0;
 	newSubCommand.cBitField.encodingType = Absolute;
-	newSubCommand.cBitField.sourceOperandAddressing = Direct;
-	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
+	newSubCommand.cBitField.sourceOperandAddressing = Immediate;
+	newSubCommand.cBitField.destinationOperandAddressing = Direct;
 	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
@@ -1016,7 +1994,10 @@ void subValueSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1051,7 +2032,10 @@ void subValueMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1117,7 +2101,10 @@ void leaRegisterSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1145,7 +2132,10 @@ void leaMatrixSymbolCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -1163,7 +2153,10 @@ void leaMatrixSymbolCmd(parms data)
 
 	destinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		destinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
 	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1198,7 +2191,10 @@ void leaRegisterMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1233,7 +2229,10 @@ void leaSymbolRegisterCmd(parms data)
 
 	sourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
 	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -1268,7 +2267,10 @@ void leaMatrixRegisterCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -1310,7 +2312,10 @@ void leaSymbolSymbolCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -1320,7 +2325,10 @@ void leaSymbolSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1348,7 +2356,10 @@ void leaSymbolMatrixCmd(parms data)
 
 	SourceSymbolParam.fullSymbolParam = 0;
 	if(data.symbolSource->external)
+	{
 		SourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
 	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
@@ -1358,7 +2369,10 @@ void leaSymbolMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1395,7 +2409,10 @@ void leaMatrixMatrixCmd(parms data)
 
 	SourceMatrixParam.fullSymbolParam = 0;
 	if(data.matrixSource->external)
+	{
 		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
 	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
@@ -1413,7 +2430,10 @@ void leaMatrixMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1486,7 +2506,10 @@ void leaValueSymbolCmd(parms data)
 	
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1521,7 +2544,10 @@ void leaValueMatrixCmd(parms data)
 	
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1576,7 +2602,10 @@ void notSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1602,7 +2631,10 @@ void notMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1657,7 +2689,10 @@ void clrSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1683,7 +2718,10 @@ void clrMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1738,7 +2776,10 @@ void incSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1764,7 +2805,10 @@ void incMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1819,7 +2863,10 @@ void decSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1845,7 +2892,10 @@ void decMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1899,8 +2949,11 @@ void jmpSymbolCmd(parms data)
 	IC++;
 
 	DesinationSymbolParam.fullSymbolParam = 0;
-		if(data.symbolDestination->external)
+	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -1926,7 +2979,10 @@ void jmpMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -1981,7 +3037,10 @@ void bneSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -2007,7 +3066,10 @@ void bneMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -2062,7 +3124,10 @@ void redSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -2088,7 +3153,10 @@ void redMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -2143,7 +3211,10 @@ void prnSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -2169,7 +3240,10 @@ void prnMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -2224,7 +3298,10 @@ void jsrSymbolCmd(parms data)
 
 	DesinationSymbolParam.fullSymbolParam = 0;
 	if(data.symbolDestination->external)
+	{
 		DesinationSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolDestination);
+	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
 	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
@@ -2250,7 +3327,10 @@ void jsrMatrixCmd(parms data)
 
 	DesinationMatrixParam.fullSymbolParam = 0;
 	if(data.matrixDestination->external)
+	{
 		DesinationMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixDestination);
+	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
 	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
@@ -2293,5 +3373,142 @@ void StopCmd(parms data)
 
 	cpuFullMemory[IC].fullReg = newRtsCommand.fullCommandInt;
 	IC++;
+}
+
+/*A function to add a symbol to the current external file*/
+void addToExternFile(pSymbol externSymbol)
+{
+	
+	char* wierdFourNum;
+	fwrite(externSymbol->label,sizeof(char),sizeof(externSymbol->label)/sizeof(char),currentExternFile);
+	fwrite(tabArray,sizeof(char),2,currentExternFile);
+	wierdFourNum = convertToWeirdFour(IC+1);
+	fwrite(wierdFourNum,sizeof(char),sizeof(wierdFourNum)/sizeof(char),currentExternFile);
+}
+
+/*A function to analize a line in the the second transition*/
+int analizeLineSecTransition(char *line)
+{
+	char* cmdName;
+	parms funcParms;
+	cmd currentCmd;
+	eParametersType funcParametersType;
+	int distance;
+
+	/*Skip white spaces*/
+	while((*line) == ' ' || (*line) == '\t')
+		line++;
+	/*find if this line is an entry or an extern line*/
+	if((strncmp(line,ENTRY,sizeof(ENTRY)/sizeof(char) - 1) == 0) || (strncmp(line,EXTERN,sizeof(EXTERN)/sizeof(char) - 1) == 0))
+	{
+		return 1;
+	}
+	else
+	{
+		/*find if there is label*/
+		if((strchr(line , ':') != NULL) && ((strchr(line , ':') && strchr(line , '"') == NULL) || (strchr(line , ':') < strchr(line , '"'))))
+		{
+			pSymbol currentLabel;
+			char* label;
+			label = (char *)malloc((strchr(line , ':') - line) * sizeof(char));
+			/*Get label name*/
+			while((*line) != ':')
+			{
+				(*label) = (*line);
+				line++;
+				label++;
+			}
+			/*Find if the label is an action line*/
+			currentLabel = findSymbolByLabel(label);
+			free(label);
+			if(!(currentLabel->action))
+			{
+				return 1;
+			}
+		}
+		/*Skip white spaces*/
+		while((*line) == ' ' || (*line) == '\t')
+			line++;
+		/*Get the command name in the line*/
+		cmdName = (char *)malloc(5 * sizeof(char));
+		while((*line) != ' ' && (*line) != '\t')
+		{
+			(*cmdName) = (*line);
+			line++;
+			cmdName++;
+		}
+		(*cmdName) = '\0';
+		/*Get command to preform*/
+		currentCmd = getCmdToPreform(cmdName , funcParametersType);
+		/*Skip white spaces*/
+		while((*line) == ' ' || (*line) == '\t')
+			line++;
+		if((*line) == '#')
+		{
+			/*get source number into the source parameter*/
+			char* number;
+			number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
+			while((*line) != ' ' && (*line) != '\t')
+			{
+				(*number) = (*line);
+				line++;
+				number++;
+			}
+			(*number) = '\0';
+			funcParms.sourceNum = atoi(number);
+			free(number);
+		}
+		currentCmd.func(funcParms);
+		free(cmdName);
+	}
+	return 0;
+}
+
+/*Find the current command to preform according to the command name and recived parameters*/
+cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType)
+{
+	int i;
+	int cmdId;
+	cmd* cmds;
+
+	/*find the current command array*/
+	for (i=0;i<16;i++)
+	{
+
+		if(strcmp(cmdName,opcodesArray[i].opcodeName)==0)
+		{
+			cmdId = opcodesArray[i].opcodeNum;
+		}
+	}
+
+	switch (cmdId)
+	{
+		case 0: cmds = movs; break;
+		case 1: cmds = cmps; break;
+		case 2: cmds = adds; break;
+		case 3: cmds = subs; break;
+		case 4: cmds = nots; break;
+		case 5: cmds = clrs; break;
+		case 6: cmds = leas; break;
+		case 7: cmds = incs; break;
+		case 8: cmds = decs; break;
+		case 9: cmds = jmps; break;
+		case 10: cmds = bnes; break;
+		case 11: cmds = reds; break;
+		case 12: cmds = prns; break;
+		case 13: cmds = jsrs; break;
+		case 14: cmds = rtss; break;
+		case 15: cmds = stops; break;
+	}
+
+	/*Find the current command in the command array*/
+	while(cmds)
+	{
+		if(cmds->paramFunc == funcParametersType)
+		{
+			return (*cmds);
+		}
+	}
+
 }
 
