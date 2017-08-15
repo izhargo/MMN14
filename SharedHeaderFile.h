@@ -137,6 +137,8 @@ typedef union memoryWord
 
 } memoryWord;
 
+extern memoryWord instArray[100];
+extern memoryWord dataArray[100];
 
 
 typedef struct
@@ -240,8 +242,7 @@ extern pSymbol SymbolTable;
 extern pSymbol SymbolTableLast;
 
 
-
-typedef enum errors {NONE, WRONG_COMMAND_LINE_INPUT ,WRONG_INPUT_IN_LABEL, WRONG_INSTRUCTION_NAME, WRONG_INPUT_VALUE, WRONG_OPERAND, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
+typedef enum errors {NONE,WRONG_INPUT_IN_LABEL, WRONG_INSTRUCTION_NAME, WRONG_INPUT_VALUE, WRONG_OPERAND, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
 
   
 

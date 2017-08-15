@@ -5,10 +5,48 @@
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
 
-errorType error;
 extern int flagLabel;
 
-void fileTransition(FILE *fd){}
+opcodeStruct opcodesArray[16]={
+	{0 , "mov"},
+	{1 , "cmp"},
+	{2 , "add"},
+	{3 , "sub"},
+	{4 , "not"},
+	{5 , "clr"},
+	{6 , "lea"},
+	{7 , "inc"},
+	{8 , "dec"},
+	{9 , "jmp"},
+	{10 , "bne"},
+	{11 , "red"},
+	{12 , "prn"},
+	{13 , "jsr"},
+	{14 , "rts"},
+	{15 , "stop"},
+};
+Errorptr errorList = NULL;
+Errorptr errorListLast = NULL;	
+int DC = 0; 
+int IC = 100;
+
+errorType error;
+
+void fileFirstTransition(FILE *fd){}
+
+char *isOrderOrInstruction(char *word){
+	char *op;
+	op = (char*) malloc (sizeof(char)*opLength);
+	if (!op){
+		fprintf(stderr, "Memory allocation failed\n");
+		exit(0);	
+	}	
+	if (word[0] == "."){ /*word could be an instruction*/
+		if (op = isOpCode(word+1)!=NULL){
+					
+		}
+	}
+}
 
 char *isLabel(char *word, int lineNumber){
 	int i = 1;	
@@ -34,7 +72,8 @@ char *isLabel(char *word, int lineNumber){
 }
 
 void analizeLine(char *line, int lineNum){
-    char *word1;
+	char orderType;    
+	char *word1;
     char *checker;
     char *restOfLine;
     char *label;
@@ -45,6 +84,9 @@ void analizeLine(char *line, int lineNum){
         restOfLine = strtok(NULL,":");
 	} else{ /* ":" doesn't appear in line"*/
         restOfLine = line;
-	}    
+	}
+	token = strtok(restOfLine," ");
+	orderType = isOrderOrInstruction(token); 
+	   
 }
 

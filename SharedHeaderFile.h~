@@ -77,7 +77,7 @@ typedef struct
 	char* opcodeName;
 } opcodeStruct;
 
-extern opcodeStruct opcodesArray[16];
+extern opcodeStruct opcodesArray[];
 
 typedef enum
 {
