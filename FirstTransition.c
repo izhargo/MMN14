@@ -5,7 +5,9 @@
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
 
-extern int flagLabel;
+errorType error = NONE;
+
+int flagLabel = 0;
 
 opcodeStruct opcodesArray[16]={
 	{0 , "mov"},
@@ -25,27 +27,47 @@ opcodeStruct opcodesArray[16]={
 	{14 , "rts"},
 	{15 , "stop"},
 };
+instructionHandle instructions[numInstructions]= {
+	{"data", dataFunc},
+	{"string", stringFunc},
+	{"mat", matFunc},
+	{"entry", entryFunc},
+	{"extern", externFunc},
+};
 Errorptr errorList = NULL;
 Errorptr errorListLast = NULL;	
 int DC = 0; 
 int IC = 100;
 
-errorType error;
+void dataFunc(char *str){
+	char token[30];
+	sscanf(str, "%s" 
+};
+void stringFunc(char *){
+};
+void matFunc(char *){
+};
+void entryFunc(char *){
+};
+void externFunc(char *){
+};
+stringFunc(char *)
+/*void fileFirstTransition(FILE *fd){}*/
 
-void fileFirstTransition(FILE *fd){}
-
-char *isOrderOrInstruction(char *word){
-	char *op;
-	op = (char*) malloc (sizeof(char)*opLength);
-	if (!op){
-		fprintf(stderr, "Memory allocation failed\n");
-		exit(0);	
-	}	
-	if (word[0] == "."){ /*word could be an instruction*/
-		if (op = isOpCode(word+1)!=NULL){
-					
-		}
-	}
+int strcmpci(char *a, char *b){
+    int i;
+    int result = 0;
+    if (strlen(a) != strlen(b)){
+        return -1;
+    }else
+    {
+    for (i=0;i<strlen(a);i++){
+        if ((result =tolower(a[i])-tolower(b[i])) != 0){
+            return result;
+        }
+    }
+    }
+    return result;
 }
 
 char *isLabel(char *word, int lineNumber){
@@ -72,21 +94,46 @@ char *isLabel(char *word, int lineNumber){
 }
 
 void analizeLine(char *line, int lineNum){
-	char orderType;    
 	char *word1;
+	char *op;
     char *checker;
     char *restOfLine;
     char *label;
+	char token[30];
+	int i = 0;	
     checker = strchr(line,':');
 	if (checker != NULL){ /* ":" appears in line*/
         word1 = strtok(line, ":");
         label = isLabel(word1, lineNum);
+		if (label == NULL){
+			return;		
+		}else
+		{
         restOfLine = strtok(NULL,":");
+		}
 	} else{ /* ":" doesn't appear in line"*/
         restOfLine = line;
 	}
-	token = strtok(restOfLine," ");
-	orderType = isOrderOrInstruction(token); 
-	   
+	sscanf(restOfLine, "%s",token);
+	/*Decide whether word is an Order (Must be in lower case charachters) or an Instraction (Could be in lower/upper case) or an input error.*/
+
+	if (token[0] == "."){ /*word should be an instruction*/ 
+		while (i<numInstructions){/*validate word is indeed an instruction*/
+			if (strcmpci(token+1,instructions[i].inst)==0){
+				break;			
+			}  	
+			else{
+				i++;			
+			}
+		}
+		if (i==numInstructions){
+			error = WRONG_INSTRUCTION_NAME;				
+			addError(&errorList, &errorListLast, error,lineNumber);
+			return;
+		}
+		else{
+			(*(instructions[i].func))(restOfLine);	
+		}
+	}   
 }
 
