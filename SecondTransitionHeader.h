@@ -14,6 +14,7 @@ typedef struct parms
 	eCpuRegisters eMatrixRegRowDestination;
 	eCpuRegisters eMatrixRegColumnDestination;
 	short sourceNum;
+	short destinationNum;
 } parms;
 
 typedef struct
@@ -25,6 +26,10 @@ typedef struct
 char* tabArray = "/t";
 typedef enum 
 {
+	VALUE_VALUE,
+	REGISTER_VALUE,
+	SYMBOL_VALUE,
+	MATRIX_VALUE,
 	TWO_REGISTER,
 	REGISTER_SYMBOL,
 	REGISTER_MATRIX,
@@ -37,6 +42,7 @@ typedef enum
 	VALUE_REGISTER,
 	VALUE_SYMBOL,
 	VALUE_MATRIX,
+	ONE_VALUE,
 	ONE_REGISTER,
 	ONE_SYMBOL,
 	ONE_MATRIX,
@@ -201,6 +207,9 @@ void readdressSymbolTable();
 int analizeLineSecTransition(char *line);
 cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType);
 void addToExternFile(pSymbol externSymbol);
+void addToEntryFile(pSymbol entrySymbol);
+eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eAddressingMethod secondParam);
+void writeObjectFile();
 
 /*mov commands*/
 void movTwoRegisterCmd(parms data);
@@ -217,6 +226,10 @@ void movValueSymbolCmd(parms data);
 void movValueMatrixCmd(parms data);
 
 /*cmp commands*/ /*Add cmp with value as destination and value-value*/
+void cmpValueValueCmd(parms data);
+void cmpRegisterValueCmd(parms data);
+void cmpSymbolValueCmd(parms data);
+void cmpMatrixValueCmd(parms data);
 void cmpTwoRegisterCmd(parms data);
 void cmpRegisterSymbolCmd(parms data);
 void cmpRegisterMatrixCmd(parms data);
@@ -308,6 +321,7 @@ void redSymbolCmd(parms data);
 void redMatrixCmd(parms data);
 
 /*prn commands*/
+void prnValueCmd(parms data);
 void prnRegisterCmd(parms data);
 void prnSymbolCmd(parms data);
 void prnMatrixCmd(parms data);
