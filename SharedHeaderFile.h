@@ -238,6 +238,7 @@ unsigned int getNumOfParamsOfOpCode(char *word);
 
 	pSymbol	next;
 
+	
 
 
 }symbol;
@@ -292,3 +293,4 @@ void printErrorList(Errorptr head);
 
 const char *getError(errorType e);
 pSymbol findSymbolByLabel(char *label);
+unsigned int getNumOfParamsOfOpCode(char *word);
