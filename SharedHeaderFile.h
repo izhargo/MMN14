@@ -9,6 +9,7 @@
 #define WORDLENGTH 10
 #define ENTRY ".ENTRY"
 #define EXTERN ".EXTERN"
+#define SIZEARRAY 100
 
 
 typedef union commandBitField
@@ -137,8 +138,8 @@ typedef union memoryWord
 
 } memoryWord;
 
-extern memoryWord instArray[100];
-extern memoryWord dataArray[100];
+extern memoryWord dataArray[SIZEARRAY];
+
 
 
 typedef struct
