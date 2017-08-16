@@ -7,9 +7,12 @@
 
 
 #define WORDLENGTH 10
+#define SIZEARRAY 100
 #define ENTRY ".ENTRY"
 #define EXTERN ".EXTERN"
-#define SIZEARRAY 100
+#define DATA ".DATA"
+#define STRING ".STRING"
+#define MAT ".MAT"
 
 
 typedef union commandBitField
@@ -206,7 +209,7 @@ FILE* currentEntryFile;
 
 
 
-typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
+unsigned int getNumOfParamsOfOpCode(char *word);typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
 
 
 
@@ -216,10 +219,11 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 	char* label;
 
-
+unsigned int getNumOfParamsOfOpCode(char *word);
 
 	int addresse;	
 
+	
 
 
 	unsigned int action:1;
@@ -229,12 +233,15 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 	unsigned int external:1;
 
 
+	
+	
 
 	pSymbol	next;
 
 
 
 }symbol;
+
 
 
 
