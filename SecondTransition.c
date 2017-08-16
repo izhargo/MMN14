@@ -4,6 +4,7 @@
 /*A function to readdress all the symbols address in the symbol table*/
 void readdressSymbolTable()
 {
+	int DC_Index = 0;
 	pSymbol current = SymbolTable;
 	while(current)
 	{
@@ -12,6 +13,10 @@ void readdressSymbolTable()
 			current->addresse += IC;
 		}
 		current = current->next;
+	}
+	for(DC_Index = 0; DC_Index <= DC; DC_Index++)
+	{
+		cpuFullMemory[DC_Index+IC] = dataArray[DC_Index];
 	}
 }
 
@@ -515,6 +520,151 @@ void movValueMatrixCmd(parms data)
 	DestinationMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnDestination;
 
 	cpuFullMemory[IC].fullReg = DestinationMatrixRegisterParam.fullRegParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a numeric value as its source parameter and a numeric value as its destination parameter*/
+void cmpValueValueCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	valueParam sourceValueParam;
+	valueParam destinationValueParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = Immediate;
+	newCmpCommand.cBitField.destinationOperandAddressing = Immediate;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	sourceValueParam.fullValueParam = 0;
+	sourceValueParam.valParam.encodingType = Absolute;
+	sourceValueParam.valParam.numericValue = data.sourceNum;
+
+	cpuFullMemory[IC].fullReg = sourceValueParam.fullValueParam;
+	IC++;
+
+	destinationValueParam.fullValueParam = 0;
+	destinationValueParam.valParam.encodingType = Absolute;
+	destinationValueParam.valParam.numericValue = data.destinationNum;
+
+	cpuFullMemory[IC].fullReg = destinationValueParam.fullValueParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a register as its source parameter and a numeric value as its destination parameter*/
+void cmpRegisterValueCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	registersParam sourceRegisterParam;
+	valueParam destinationValueParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = DirectRegister;
+	newCmpCommand.cBitField.destinationOperandAddressing = Immediate;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	sourceRegisterParam.fullRegParam = 0;
+	sourceRegisterParam.regParam.encodingType = Absolute;
+	sourceRegisterParam.regParam.regSource = data.eRegSource;
+
+	cpuFullMemory[IC].fullReg = sourceRegisterParam.fullRegParam;
+	IC++;
+
+	destinationValueParam.fullValueParam = 0;
+	destinationValueParam.valParam.encodingType = Absolute;
+	destinationValueParam.valParam.numericValue = data.destinationNum;
+
+	cpuFullMemory[IC].fullReg = destinationValueParam.fullValueParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a symbol parameter as its source parameter and a numeric value as its destination parameter*/
+void cmpSymbolValueCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam sourceSymbolParam;
+	valueParam destinationValueParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
+	newCmpCommand.cBitField.destinationOperandAddressing = Immediate;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	sourceSymbolParam.fullSymbolParam = 0;
+	if(data.symbolSource->external)
+	{
+		sourceSymbolParam.symParam.encodingType = External;
+		addToExternFile(data.symbolSource);
+	}
+	else
+		sourceSymbolParam.symParam.encodingType = Relocatable;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+
+	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
+	IC++;
+
+	destinationValueParam.fullValueParam = 0;
+	destinationValueParam.valParam.encodingType = Absolute;
+	destinationValueParam.valParam.numericValue = data.destinationNum;
+
+	cpuFullMemory[IC].fullReg = destinationValueParam.fullValueParam;
+	IC++;
+}
+
+/*A function to add to the memory a cmp command with a matrix parameter as its source parameter and a numeric value as its destination parameter*/
+void cmpMatrixValueCmd(parms data)
+{
+	commandBitField newCmpCommand;
+	symbolParam SourceMatrixParam;
+	registersParam SourceMatrixRegisterParam;
+	valueParam destinationValueParam;
+
+	newCmpCommand.fullCommandInt = 0;
+	newCmpCommand.cBitField.encodingType = Absolute;
+	newCmpCommand.cBitField.sourceOperandAddressing = Direct;
+	newCmpCommand.cBitField.destinationOperandAddressing = Immediate;
+	newCmpCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newCmpCommand.fullCommandInt;
+	IC++;
+
+	SourceMatrixParam.fullSymbolParam = 0;
+	if(data.matrixSource->external)
+	{
+		SourceMatrixParam.symParam.encodingType = External;
+		addToExternFile(data.matrixSource);
+	}
+	else
+		SourceMatrixParam.symParam.encodingType = Relocatable;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
+	IC++;
+
+	SourceMatrixRegisterParam.fullRegParam = 0;
+	SourceMatrixRegisterParam.regParam.encodingType = Absolute;
+	SourceMatrixRegisterParam.regParam.regSource = data.eMatrixRegRowSource;
+	SourceMatrixRegisterParam.regParam.regDestination = data.eMatrixRegColumnSource;
+
+	cpuFullMemory[IC].fullReg = SourceMatrixRegisterParam.fullRegParam;
+	IC++;
+
+	destinationValueParam.fullValueParam = 0;
+	destinationValueParam.valParam.encodingType = Absolute;
+	destinationValueParam.valParam.numericValue = data.destinationNum;
+
+	cpuFullMemory[IC].fullReg = destinationValueParam.fullValueParam;
 	IC++;
 }
 
@@ -3173,6 +3323,28 @@ void redMatrixCmd(parms data)
 	IC++;
 }
 
+/*A function to add to the memory a prn command with a value as its destination parameter*/
+void prnValueCmd(parms data)
+{
+	commandBitField newPrnCommand;
+	valueParam destinationValueParam;
+
+	newPrnCommand.fullCommandInt = 0;
+	newPrnCommand.cBitField.encodingType = Absolute;
+	newPrnCommand.cBitField.destinationOperandAddressing = Immediate;
+	newPrnCommand.cBitField.opcode = opcodesArray[12].opcodeNum;
+
+	cpuFullMemory[IC].fullReg = newPrnCommand.fullCommandInt;
+	IC++;
+
+	destinationValueParam.fullValueParam = 0;
+	destinationValueParam.valParam.encodingType = Absolute;
+	destinationValueParam.valParam.numericValue = data.destinationNum;
+
+	cpuFullMemory[IC].fullReg = destinationValueParam.fullValueParam;
+	IC++;
+}
+
 /*A function to add to the memory a prn command with a register as its destination parameter*/
 void prnRegisterCmd(parms data)
 {
@@ -3386,6 +3558,163 @@ void addToExternFile(pSymbol externSymbol)
 	fwrite(wierdFourNum,sizeof(char),sizeof(wierdFourNum)/sizeof(char),currentExternFile);
 }
 
+/*A function to add a symbol to the current entry file*/
+void addToEntryFile(pSymbol entrySymbol)
+{
+	
+	char* wierdFourNum;
+	fwrite(entrySymbol->label,sizeof(char),sizeof(entrySymbol->label)/sizeof(char),currentEntryFile);
+	fwrite(tabArray,sizeof(char),2,currentEntryFile);
+	wierdFourNum = convertToWeirdFour(IC+1);
+	fwrite(wierdFourNum,sizeof(char),sizeof(wierdFourNum)/sizeof(char),currentEntryFile);
+}
+
+/*A function to move over the lines in a file and create the extern, entry and object file*/
+void moveOverFile(FILE* currentFile , char* currentFileName)
+{
+	/*Create the current extern, entry and object file that related to the current file*/
+	char* currentExternFileName;
+	char* currentObjectFileName;
+	char* currentEntryFileName;
+	char* startLine;
+	int fileChar; 
+	
+	int ind = 0;
+
+	currentExternFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
+	currentEntryFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
+	currentObjectFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+3)*sizeof(char)));
+	while((int)(*currentFileName) != EOF)
+	{
+		currentExternFileName[ind] = (*currentFileName);
+		currentEntryFileName[ind] = (*currentFileName);
+		currentObjectFileName[ind] = (*currentFileName);
+		currentFileName++;
+		ind++;
+	}
+
+	currentExternFileName[ind] = '.';
+	currentExternFileName[ind+1] = 'e';
+	currentExternFileName[ind+2] = 'x';
+	currentExternFileName[ind+3] = 't';
+	currentExternFileName[ind+4] = '\0';
+
+	currentEntryFileName[ind] = '.';
+	currentEntryFileName[ind+1] = 'e';
+	currentEntryFileName[ind+2] = 'n';
+	currentEntryFileName[ind+3] = 't';
+	currentEntryFileName[ind+4] = '\0';
+
+	currentEntryFileName[ind] = '.';
+	currentEntryFileName[ind+1] = 'o';
+	currentEntryFileName[ind+2] = 'b';
+	currentEntryFileName[ind+3] = '\0';
+
+	currentExternFile = fopen(currentExternFileName , "w");
+	currentEntryFile = fopen(currentEntryFileName , "w");
+	currentObjectFile = fopen(currentObjectFileName , "w");
+
+	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
+	ind = 0;
+	while(fileChar = fgetc(currentFile))
+	{
+		if(fileChar == '\n')
+		{
+			startLine[ind] = '\0';
+			analizeLineSecTransition(startLine);
+			ind = 0;
+			continue;
+		}
+		if (fileChar == EOF)
+		{
+			startLine[ind] = '\0';
+			analizeLineSecTransition(startLine);
+			ind = 0;
+			break;
+		}
+		else
+            startLine[ind++] = (char)fileChar;
+	}
+
+	writeObjectFile();
+
+	free(currentExternFileName);
+	free(currentEntryFileName);
+	free(currentObjectFileName);
+	free(startLine);
+}
+
+void writeObjectFile()
+{
+	int moveObjectFile = 0;
+	char* NumToWierdFour;
+	char* DataToWierdFour;
+	char* newLine = "\n";
+	NumToWierdFour = convertToWeirdFour(IC);
+	DataToWierdFour = convertToWeirdFour(DC);
+	
+	fwrite(tabArray,sizeof(char),sizeof(tabArray)/sizeof(char),currentObjectFile);
+	fwrite(DataToWierdFour,sizeof(char),sizeof(DataToWierdFour)/sizeof(char),currentObjectFile);
+	for(moveObjectFile = 0;  moveObjectFile < IC+DC; moveObjectFile++)
+	{
+		fwrite(newLine,sizeof(char),sizeof(newLine)/sizeof(char),currentObjectFile);
+		NumToWierdFour = convertToWeirdFour(moveObjectFile);
+		fwrite(NumToWierdFour,sizeof(char),sizeof(NumToWierdFour)/sizeof(char),currentObjectFile);
+		fwrite(tabArray,sizeof(char),sizeof(tabArray)/sizeof(char),currentObjectFile);
+		NumToWierdFour = convertToWeirdFour(cpuFullMemory[moveObjectFile].fullReg);
+		fwrite(NumToWierdFour,sizeof(char),sizeof(NumToWierdFour)/sizeof(char),currentObjectFile);
+	}
+
+	free(NumToWierdFour);
+	free(DataToWierdFour);
+}
+
+/*A function to get the parameter type a function return by two addressing method*/
+eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eAddressingMethod secondParam)
+{
+	if(firstParam == Immediate)
+	{
+		switch(secondParam)
+		{
+			case Immediate: return VALUE_VALUE; break;
+			case Direct: return VALUE_SYMBOL; break;
+			case MatrixAccess: return VALUE_MATRIX; break;
+			case DirectRegister: return VALUE_REGISTER; break;
+		}
+	}
+	if(firstParam == Direct)
+	{
+		switch(secondParam)
+		{
+			case Immediate: return SYMBOL_VALUE; break;
+			case Direct: return SYMBOL_SYMBOL; break;
+			case MatrixAccess: return SYMBOL_MATRIX; break;
+			case DirectRegister: return SYMBOL_REGISTER; break;
+		}
+	}
+	if(firstParam == MatrixAccess)
+	{
+		switch(secondParam)
+		{
+			case Immediate: return MATRIX_VALUE; break;
+			case Direct: return MATRIX_SYMBOL; break;
+			case MatrixAccess: return MATRIX_MATRIX; break;
+			case DirectRegister: return MATRIX_REGISTER; break;
+		}
+	}
+	if(firstParam == DirectRegister)
+	{
+		switch(secondParam)
+		{
+			case Immediate: return REGISTER_VALUE; break;
+			case Direct: return REGISTER_SYMBOL; break;
+			case MatrixAccess: return REGISTER_MATRIX; break;
+			case DirectRegister: return TWO_REGISTER; break;
+		}
+	}
+	return NONE_PARAMETERS;
+}
+
 /*A function to analize a line in the the second transition*/
 int analizeLineSecTransition(char *line)
 {
@@ -3393,13 +3722,19 @@ int analizeLineSecTransition(char *line)
 	parms funcParms;
 	cmd currentCmd;
 	eParametersType funcParametersType;
-	int distance;
+	unsigned int numOfParams;
+	bool gotFirstParam = false , gotSecondParam = false;
+	eAddressingMethod firstParamAddressingMethod;
+	int count = 0;
 
 	/*Skip white spaces*/
 	while((*line) == ' ' || (*line) == '\t')
 		line++;
+	
 	/*find if this line is an entry or an extern line*/
-	if((strncmp(line,ENTRY,sizeof(ENTRY)/sizeof(char) - 1) == 0) || (strncmp(line,EXTERN,sizeof(EXTERN)/sizeof(char) - 1) == 0))
+	if((strncmp(line,ENTRY,sizeof(ENTRY)/sizeof(char) - 1) == 0) || (strncmp(line,EXTERN,sizeof(EXTERN)/sizeof(char) - 1) == 0)
+		|| (strncmp(line,DATA,sizeof(DATA)/sizeof(char) - 1) == 0) || (strncmp(line,STRING,sizeof(STRING)/sizeof(char) - 1) == 0)
+		|| (strncmp(line,MAT,sizeof(MAT)/sizeof(char) - 1) == 0))
 	{
 		return 1;
 	}
@@ -3425,39 +3760,310 @@ int analizeLineSecTransition(char *line)
 			{
 				return 1;
 			}
+			else
+			{
+				addToEntryFile(currentLabel);
+			}
 		}
 		/*Skip white spaces*/
 		while((*line) == ' ' || (*line) == '\t')
 			line++;
 		/*Get the command name in the line*/
 		cmdName = (char *)malloc(5 * sizeof(char));
-		while((*line) != ' ' && (*line) != '\t')
+		count = 0;
+		while((*line) != ' ' && (*line) != '\t' && count<=3)
 		{
 			(*cmdName) = (*line);
 			line++;
 			cmdName++;
+			count++;
 		}
 		(*cmdName) = '\0';
-		/*Get command to preform*/
-		currentCmd = getCmdToPreform(cmdName , funcParametersType);
+		numOfParams = getNumOfParamsOfOpCode(cmdName);
 		/*Skip white spaces*/
 		while((*line) == ' ' || (*line) == '\t')
-			line++;
-		if((*line) == '#')
-		{
-			/*get source number into the source parameter*/
-			char* number;
-			number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
-			while((*line) != ' ' && (*line) != '\t')
-			{
-				(*number) = (*line);
 				line++;
-				number++;
+		if(numOfParams != 0)
+		{
+			if((*line) == '#')
+			{
+				/*get a number parameter*/
+				char* number;
+				number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
+				while((*line) != ' ' && (*line) != '\t')
+				{
+					(*number) = (*line);
+					line++;
+					number++;
+				}
+				(*number) = '\0';
+				if(numOfParams == 2)
+				{
+					funcParms.sourceNum = atoi(number);
+					firstParamAddressingMethod = Immediate;
+				}
+				else
+				{
+					if(numOfParams == 1)
+					{
+						funcParms.destinationNum = atoi(number);
+						funcParametersType = ONE_VALUE;
+					}
+				}
+				free(number);
 			}
-			(*number) = '\0';
-			funcParms.sourceNum = atoi(number);
-			free(number);
+			else
+			{
+				char* word;
+				count = 0;
+				word =  (char *)malloc((MAXLABEL+1) * sizeof(char));
+				if(toupper((*line)) == 'R')
+				{
+					(*word) = 'R';
+					word++;
+					count++;
+					line++;
+					if((*line) >='0' && (*line) <= '7')
+					{
+						(*word) = (*line);
+						word++;
+						count++;
+						line++;
+						if((*line) == ' ' || (*line) == '\t' || (*line) == ',')
+						{
+							eCpuRegisters currentRegister;
+							switch((*word) - '0')
+							{
+								case 0: currentRegister = r0; break;
+								case 1: currentRegister = r1; break;
+								case 2: currentRegister = r2; break;
+								case 3: currentRegister = r3; break;
+								case 4: currentRegister = r4; break;
+								case 5: currentRegister = r5; break;
+								case 6: currentRegister = r6; break;
+								case 7: currentRegister = r7; break;
+							}
+							if(numOfParams == 2)
+							{
+								funcParms.eRegSource = currentRegister;
+								firstParamAddressingMethod = DirectRegister;
+							}
+							else
+							{
+								if(numOfParams == 1)
+								{
+									funcParms.eRegDestination = currentRegister;
+									funcParametersType = ONE_REGISTER;
+								}
+							}
+						}
+						else
+						{
+							while((*line) != ' ' && (*line) != '\t' && (*line) != '[')
+							{
+								(*word) = (*line);
+								line++;
+								word++;
+							}
+							word = '\0';
+							while((*line) == ' ' || (*line) == '\t')
+								line++;
+							if((*line) == '[')
+							{
+								eCpuRegisters registerSource;
+								eCpuRegisters registerDestination;
+								while((*line) == ' ' || (*line) == '\t')
+									line++;
+								line++;
+								switch((*line) - '0')
+								{
+									case 0: registerSource = r0; break;
+									case 1: registerSource = r1; break;
+									case 2: registerSource = r2; break;
+									case 3: registerSource = r3; break;
+									case 4: registerSource = r4; break;
+									case 5: registerSource = r5; break;
+									case 6: registerSource = r6; break;
+									case 7: registerSource = r7; break;
+								}
+								while((*line) == ' ' || (*line) == '\t')
+									line++;
+								line++;
+								switch((*line) - '0')
+								{
+									case 0: registerDestination = r0; break;
+									case 1: registerDestination = r1; break;
+									case 2: registerDestination = r2; break;
+									case 3: registerDestination = r3; break;
+									case 4: registerDestination = r4; break;
+									case 5: registerDestination = r5; break;
+									case 6: registerDestination = r6; break;
+									case 7: registerDestination = r7; break;
+								}
+								if(numOfParams == 2)
+								{
+										funcParms.matrixSource = findSymbolByLabel(word);
+										funcParms.eMatrixRegRowSource = registerSource;
+										funcParms.eMatrixRegColumnSource = registerDestination;
+										firstParamAddressingMethod = MatrixAccess;
+								}
+								else
+								{
+									if(numOfParams == 1)
+									{
+										funcParms.matrixDestination = findSymbolByLabel(word);
+										funcParms.eMatrixRegRowDestination = registerSource;
+										funcParms.eMatrixRegColumnDestination = registerDestination;
+										funcParametersType = ONE_MATRIX;
+									}
+								}
+							}
+							else
+							{
+								if(numOfParams == 2)
+								{
+									funcParms.symbolSource = findSymbolByLabel(word);
+									firstParamAddressingMethod = Direct;
+								}
+								else
+								{
+									if(numOfParams == 1)
+									{
+										funcParms.symbolDestination = findSymbolByLabel(word);
+										funcParametersType = ONE_SYMBOL;
+									}
+								}
+							}
+							free(word);
+						}
+					}
+				}
+			}
+			if(numOfParams == 2)
+			{
+				if((*line) == ',')
+				{
+					line++;
+				}
+				/*Skip white spaces*/
+				while((*line) == ' ' || (*line) == '\t')
+					line++;
+				if((*line) == '#')
+				{
+					/*Get a number parameter from line as destination parameter*/
+					char* number;
+					number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
+					while((*line) != ' ' && (*line) != '\t')
+					{
+						(*number) = (*line);
+						line++;
+						number++;
+					}
+					(*number) = '\0';
+					funcParms.destinationNum = atoi(number);
+					funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Immediate);
+					free(number);
+				}
+				else
+				{
+					char* word;
+					count = 0;
+					word =  (char *)malloc((MAXLABEL+1) * sizeof(char));
+					if(toupper((*line)) == 'R')
+					{
+						(*word) = 'R';
+						word++;
+						count++;
+						line++;
+						if((*line) >='0' && (*line) <= '7')
+						{
+							(*word) = (*line);
+							word++;
+							count++;
+							line++;
+							if( (*line) == ' ' || (*line) == '\t' || (*line) == '\n' || (int)(*line) == EOF )
+							{
+								eCpuRegisters currentRegister;
+								switch((*word) - '0')
+								{
+									case 0: currentRegister = r0; break;
+									case 1: currentRegister = r1; break;
+									case 2: currentRegister = r2; break;
+									case 3: currentRegister = r3; break;
+									case 4: currentRegister = r4; break;
+									case 5: currentRegister = r5; break;
+									case 6: currentRegister = r6; break;
+									case 7: currentRegister = r7; break;
+								}
+								funcParms.eRegDestination = currentRegister;
+								funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , DirectRegister);
+							}
+							else
+							{
+								while((*line) != ' ' && (*line) != '\t' && (*line) == '\n' && (int)(*line) == EOF && (*line) != '[')
+								{
+									(*word) = (*line);
+									line++;
+									word++;
+								}
+								word = '\0';
+								while((*line) == ' ' || (*line) == '\t')
+									line++;
+								if((*line) == '[')
+								{
+									eCpuRegisters registerSource;
+									eCpuRegisters registerDestination;
+									while((*line) == ' ' || (*line) == '\t')
+										line++;
+									line++;
+									switch((*line) - '0')
+									{
+										case 0: registerSource = r0; break;
+										case 1: registerSource = r1; break;
+										case 2: registerSource = r2; break;
+										case 3: registerSource = r3; break;
+										case 4: registerSource = r4; break;
+										case 5: registerSource = r5; break;
+										case 6: registerSource = r6; break;
+										case 7: registerSource = r7; break;
+									}
+									while((*line) == ' ' || (*line) == '\t')
+										line++;
+									line++;
+									switch((*line) - '0')
+									{
+										case 0: registerDestination = r0; break;
+										case 1: registerDestination = r1; break;
+										case 2: registerDestination = r2; break;
+										case 3: registerDestination = r3; break;
+										case 4: registerDestination = r4; break;
+										case 5: registerDestination = r5; break;
+										case 6: registerDestination = r6; break;
+										case 7: registerDestination = r7; break;
+									}
+									funcParms.matrixDestination = findSymbolByLabel(word);
+									funcParms.eMatrixRegRowDestination = registerSource;
+									funcParms.eMatrixRegColumnDestination = registerDestination;
+									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , MatrixAccess);
+								}
+								else
+								{
+									funcParms.symbolDestination = findSymbolByLabel(word);
+									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Direct);
+								}
+								free(word);
+							}
+						}
+					}
+				}
+			}
 		}
+		else
+		{
+			funcParametersType = NONE_PARAMETERS;
+		}
+		/*Get command to preform and preform it*/
+		currentCmd = getCmdToPreform(cmdName , funcParametersType);
 		currentCmd.func(funcParms);
 		free(cmdName);
 	}
