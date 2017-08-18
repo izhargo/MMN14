@@ -4,6 +4,11 @@
 
 #include <stdlib.h>
 
+#define MAXLINE	80
+#define MAXLABEL 30
+#define opLength 4
+#define numInstructions 5
+#define numRegisters 8
 
 
 #define WORDLENGTH 10
@@ -141,7 +146,7 @@ typedef union memoryWord
 
 } memoryWord;
 
-extern memoryWord dataArray[SIZEARRAY];
+extern memoryWord dataArray[];
 
 
 
@@ -209,7 +214,9 @@ FILE* currentEntryFile;
 
 
 
-unsigned int getNumOfParamsOfOpCode(char *word);typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
+unsigned int getNumOfParamsOfOpCode(char *word);
+
+typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
 
 
 
@@ -219,9 +226,9 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 	char* label;
 
-unsigned int getNumOfParamsOfOpCode(char *word);
 
-	int addresse;	
+
+	int address;	
 
 	
 
@@ -251,7 +258,7 @@ extern pSymbol SymbolTable;
 extern pSymbol SymbolTableLast;
 
 
-typedef enum errors {NONE,WRONG_INPUT_IN_LABEL, WRONG_INSTRUCTION_NAME, WRONG_INPUT_VALUE, WRONG_OPERAND, SYMBOL_ALREADY_IN_THE_TABLE} errorType;
+typedef enum errors {NONE,WRONG_INPUT_IN_LABEL,SYMBOL_ALREADY_IN_THE_TABLE,LABEL_INPUT_TOO_LONG,WRONG_INSTRUCTION_NAME, WRONG_INPUT_VALUE, WRONG_OPERAND,TOO_MANY_OPERANDS} errorType;
 
   
 
@@ -263,7 +270,7 @@ typedef struct errorNode{
 
 
 
-	errorType description;
+	errorType title;
 
 
 
@@ -287,10 +294,11 @@ extern Errorptr errorListLast;
 
 /*function adds an error to the linked list of errors in the assembly program*/ 
 
-void addError (Errorptr *head, Errorptr *last, errorType err, int numLine);
-
-void printErrorList(Errorptr head);
-
+void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine);
 const char *getError(errorType e);
+void printErrorList(Errorptr head);
+char *isOpCode(char *word);
+void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt);
 pSymbol findSymbolByLabel(char *label);
+void printSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);

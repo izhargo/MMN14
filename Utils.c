@@ -62,7 +62,7 @@ char* convertToWeirdFour(short wordShort)
 
 
 
-void addError (Errorptr *head, Errorptr *last, errorType err, int numLine){
+void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine){
 
 	Errorptr temp,p;
 
@@ -78,7 +78,7 @@ void addError (Errorptr *head, Errorptr *last, errorType err, int numLine){
 
 	/*new item is put in a temporary node before entering the list*/
 
-	temp->description = err;
+	temp->title = err;
 
 	temp->lineNumber = numLine;
 
@@ -112,17 +112,19 @@ const char *getError(errorType e){
 
 		case NONE: return "NONE";
 
-		case WRONG_COMMAND_LINE_INPUT : return "WRONG_COMMAND_LINE_INPUT";
-
 		case WRONG_INPUT_IN_LABEL : return "WRONG_INPUT_IN_LABEL";
+		
+		case SYMBOL_ALREADY_IN_THE_TABLE : return "SYMBOL_ALREADY_IN_THE_TABLE"; 
 
+		case LABEL_INPUT_TOO_LONG : return "LABEL_INPUT_TOO_LONG";		
+		
 		case WRONG_INSTRUCTION_NAME : return "WRONG_INSTRUCTION_NAME";
 
 		case WRONG_INPUT_VALUE : return "WRONG_INPUT_VALUE";
 
 		case WRONG_OPERAND : return "WRONG_OPERAND";
 
-		case SYMBOL_ALREADY_IN_THE_TABLE : return "SYMBOL_ALREADY_IN_THE_TABLE"; 
+		case TOO_MANY_OPERANDS : return "TOO_MANY_OPERANDS";
 
 		default: return NULL;	
 
@@ -138,21 +140,10 @@ void printErrorList(Errorptr head){
 
 	p = head;
 
-	if ((p != NULL) && (p->lineNumber==0)){
+	while(p != NULL){
+		printf("%s, in line: %d\n",getError(p->title), p->lineNumber);				
 
-		printf("%s\n",getError(p->description)); 	
-
-	} else 
-
-	{	
-
-		while(p != NULL){		
-
-			printf("%s has occured in line: %d\n",getError(p->description), p->lineNumber);				
-
-			p=p->next;
-
-		}
+		p=p->next;
 
 	}
 
@@ -182,6 +173,52 @@ char *isOpCode(char *word){
 
 }
 
+void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt)  {
+
+	pSymbol temp,p;
+
+	temp = (pSymbol) malloc(sizeof(symbol));/* allocate memory for a new 														Error in list*/
+
+	if (!temp){
+
+		fprintf(stderr, "Memory allocation failed\n");
+
+		exit(0);
+
+	}
+
+	/*new item is put in a temporary node before entering the list*/
+
+	temp->label = str;
+
+	temp->address = counter;
+
+	temp->action = isAct;
+
+	temp->external = isExt;
+
+	temp->next = NULL;
+
+	if (!(*head)){	/*insert to an empty list*/
+
+		*last = temp;
+
+		*head = temp;
+
+	}
+
+	else {	/*insert to a non-empty list */
+
+		p = *last;
+
+		p->next = temp;
+
+		*last = p->next;
+
+	}		
+
+}
+
 pSymbol findSymbolByLabel(char *label)
 {
 	pSymbol currentSymbol = SymbolTable;
@@ -194,4 +231,23 @@ pSymbol findSymbolByLabel(char *label)
 		currentSymbol = currentSymbol->next;
 	}
 	return NULL;
+}
+
+void printSymbolList(pSymbol head){
+
+	pSymbol p;
+
+	p = head;
+
+	while(p != NULL){
+		printf("Label: %s, Address: %d, External: %d, Action: %d\n",p->label, p->address, p->external, p->action);				
+
+		p=p->next;
+
+	}
+
+	printf("\n");
+
+	return;	
+
 }
