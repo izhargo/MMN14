@@ -7,12 +7,9 @@
 
 binWord bin;
 
-char *label;
-
 errorType error = NONE;
 
 int flagLabel = 0;
-
 
 opcodeStruct opcodesArray[16]={
 	{0 , "mov"},
@@ -45,19 +42,43 @@ memoryWord dataArray[SIZEARRAY];
 int DC = 0; 
 int IC = 100;
 
-	
+int isInteger(char *str){
+	int i;
+	if (strlen(str)==0)	return 0;
+	for (i=0;i<strlen(str);i++){ 		
+		if (isdigit(str[i]) == 0){
+			return 0;
+		}
+	}
+	return 1;
+}	
+
+int isParam(char *str){
+	char num[MAXWORD];
+	int result = 0;
+	sscanf(str,"%s",num);	
+	/*validating input as integers only*/
+	if ((num[0] == '+') || (num[0] == '-')){
+		memmove(num, num+1, strlen(num));
+	}
+	if (isInteger(num) == 1){
+		result = 1;			
+	} 
+	return result;
+}
+
 int strcmpci(char *a, char *b){
     int i;
     int result = 0;
     if (strlen(a) != strlen(b)){
         return -1;
-    }else
-    {
-    for (i=0;i<strlen(a);i++){
-        if ((result =tolower(a[i])-tolower(b[i])) != 0){
-            return result;
-        }
     }
+	else{
+    	for (i=0;i<strlen(a);i++){
+        	if ((result =tolower(a[i])-tolower(b[i])) != 0){
+        	    return result;
+        	}
+    	}
     }
     return result;
 }
@@ -126,71 +147,170 @@ void addToDataArray(int num){
 	DC++;
 }
 
-void dataFunc(char *str,int lineNumber){		
-	char *token;
-	char num[30];
-	int i;    
-	int data;
+int isBlank(char *str){
+	int i;	
+	int result = 1;
+	for (i=0;i<strlen(str);i++){
+		if (!isspace(str[i])){
+			result = 0;
+			break;
+		}	
+	}
+	return result;
+}
+
+void matFunc(char *str,int lineNumber){		
+	char *token, *tokenInner;
+	char size1[MAXWORD];
+	char size2[MAXWORD];
+	int i,row,col,data,checker,matSize; 
 	token = strtok (str," ");
-    while((token = strtok (NULL,",")) != NULL){		
-		sscanf(token,"%s",num);
-		/*validating input as integers only*/
-		if ((num[0] == '+') || (num[0] == '-') || (isdigit(num[0]) !=0 )){
-			for (i=1;i<strlen(num);i++){  			
-				if (isdigit(num[i]) == 0){
-					addError(WRONG_INPUT_VALUE,lineNumber);        
+    token = strtok (NULL," "); 
+	checker = sscanf(token,"[%99[^]]]" "[%99[^]]]",size1,size2);
+	if (checker<=1){
+		addError(WRONG_MATRIX_SIZE,lineNumber); 
+		return; 	
+	}
+	else if ((isInteger(size1) == 0) || (isInteger(size2) == 0)){
+		addError(WRONG_MATRIX_SIZE,lineNumber); 
+		return;
+	}
+	else{
+		row = atoi(size1);
+		col = atoi(size2);
+		matSize = col*row;
+		if (((token = strtok (NULL,"\n")) == NULL) || (isBlank(token))){
+			for (i=0;i<matSize;i++){
+				addToDataArray(0);
+			}
+			return;		
+		}	
+		else{
+			tokenInner = strtok(token, ",");
+			for (i=0;i<matSize;i++){
+				if ((tokenInner != NULL) && (isParam(tokenInner) == 1)){
+					data = atoi(tokenInner);
+					addToDataArray(data);
+				}
+				else{
+					addError(WRONG_MATRIX_PARAMETER_VALUE,lineNumber);        
 					return;
 				}
+				tokenInner = strtok(NULL, ",");
+			}
+			if (tokenInner){
+				addError(WRONG_MATRIX_PARAMETER_VALUE,lineNumber);        
+				return;			
 			}
 		}
-		else{
-			addError(WRONG_INPUT_VALUE,lineNumber);        
+	}
+}
+		
+void stringFunc(char *str,int lineNumber){		
+	char *token;
+	char param[MAXWORD];
+	int i,checker,data;   
+	token = strtok (str," ");
+	token = strtok(NULL, "\n");
+	if (token == NULL){
+		addError(WRONG_PARAMETER_VALUE,lineNumber);        
+		return;	
+	}
+	else{
+		checker = sscanf(token," \"%[^\"]",param);
+		if (checker<=0){		
+			addError(WRONG_PARAMETER_VALUE,lineNumber);        
 			return;
 		}
-		/*input is validated*/
-		data = atoi(num);
-		addToDataArray(data);
+		else{
+			printf("%d\n",param[strlen(param)-1]);
+			for (i=0;i<strlen(param);i++){
+				data = param[i];
+				addToDataArray(data);			
+			}		
+		}   
 	}
 }		
-/*
-void stringFunc(char *){
-};
-void matFunc(char *){
-};
-void entryFunc(char *){
-};
-void externFunc(char *){
-};
-stringFunc(char *)
-void fileFirstTransition(FILE *fd);
-*/ 
+	
+void dataFunc(char *str,int lineNumber){		
+	char *token;
+	int data;
+	token = strtok (str," ");
+    while((token = strtok (NULL,",")) != NULL){			
+		if (isParam(token) == 1){
+			data = atoi(token);
+			addToDataArray(data);
+		}
+		else{
+			addError(WRONG_PARAMETER_VALUE,lineNumber);        
+			return;
+		}
+	}	
+}
+/*function makes a special label validation, different from the one in isLabel, due to requirements*/
+void externFunc(char *str,int lineNumber){
+	char *token, *exLabel;
+	int i = 0;	
+	token = strtok(str," ");
+	token = strtok(NULL," ");
+	exLabel = (char *) malloc(sizeof(char));
+	if (!exLabel){
+		fprintf(stderr, "Memory Allocation Failure\n");	
+		exit(0);	
+	}
+	if (token == NULL){
+		addError(NO_LABEL_FOR_EXTERN_INSTRUCTION,lineNumber);
+		return;
+	}
+	else{
+		sscanf(token, "%s", exLabel);
+		if ((isalpha(exLabel[0]) == 0) || (isOpCode(exLabel) != NULL)|| 
+		(isRegister(exLabel) != NULL) || (isInstruction(exLabel) != NULL) ||
+		(strlen(exLabel) > MAXLABEL)){
+			addError(ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,lineNumber);
+			return;
+		}
+		else{
+			while (exLabel[i]){
+				if (isalnum(exLabel[i]) == 0){
+					addError(ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,lineNumber);
+					return;		
+				} 
+				else{
+					i++;
+				}
+			}
+			if ((token = strtok(NULL," ")) != NULL){
+				addError(ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,lineNumber);
+				return;
+			}
+			addToSymbolList(&SymbolTable, &SymbolTableLast, exLabel, 0, 0, 1);
+		}
+	}	
+}
 
 char *isLabel(char *word, int lineNumber){
 	int i = 1;	
 	if ((isalpha(word[0]) == 0) || (isOpCode(word) != NULL)|| 
 		(isRegister(word) != NULL) || (isInstruction(word) != NULL)){
-		error = WRONG_INPUT_IN_LABEL;
-		addToErrorList(&errorList, &errorListLast, error,lineNumber);
+		addError(WRONG_INPUT_IN_LABEL,lineNumber);  		
 		flagLabel = 0;
 		return NULL;       	
 	}
 	else if (findSymbolByLabel(word) != NULL){ 
-		error = SYMBOL_ALREADY_IN_THE_TABLE;				
-		addToErrorList(&errorList, &errorListLast, error,lineNumber);        
+		addError(SYMBOL_ALREADY_IN_THE_TABLE,lineNumber);		     
 		flagLabel = 0;
 		return NULL;
 	}
 	else if (strlen(word) > MAXLABEL){
-		error = LABEL_INPUT_TOO_LONG;				
-		addToErrorList(&errorList, &errorListLast, error,lineNumber);        
+		addError(LABEL_INPUT_TOO_LONG,lineNumber);		    
 		flagLabel = 0;
 		return NULL;
 	}	 
 	else{
 		while (word[i]){
 			if (isalnum(word[i]) == 0){
-				error = WRONG_INPUT_IN_LABEL;				
-				addToErrorList(&errorList, &errorListLast, error, 				 								lineNumber);				
+				addError(WRONG_INPUT_IN_LABEL,lineNumber);			
 				flagLabel = 0;
 				return NULL;			
 			} 
@@ -204,10 +324,11 @@ char *isLabel(char *word, int lineNumber){
 }
 
 void analizeLine(char *line, int lineNum){
+	char *label;	
 	char *word1;
     char *checker;
     char *restOfLine;
-	char token[30];
+	char token[MAXWORD];
     checker = strchr(line,':');
 	if (checker != NULL){ /* ":" appears in line*/           
 		word1 = strtok(line, ":");
@@ -219,43 +340,64 @@ void analizeLine(char *line, int lineNum){
 	}
 	else{ /* ":" doesn't appear in line"*/        
 		restOfLine = line;
+		flagLabel = 0;
 	}
 	sscanf(restOfLine, "%s",token);
 	/*Decide whether word is an Order (Must be in lower case charachters) or an Instraction (Could be in lower/upper case) or an input error.*/
-
 	if (token[0] == '.'){ /*word should be an instruction*/ 					
 		if (isInstruction(token+1) == NULL){
-			error = WRONG_INSTRUCTION_NAME;				
-			addToErrorList(&errorList, &errorListLast, error,lineNum);
+			addError(WRONG_INSTRUCTION_NAME,lineNum);						
 			return;
 		}
 		else if (strcmp(instructions[0],isInstruction(token+1)) == 0){		
-				if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
-				dataFunc(restOfLine,lineNum);
+			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
+			dataFunc(restOfLine,lineNum);
 		}
 		else if (strcmp(instructions[1],isInstruction(token+1)) == 0){		
-				if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
-				dataFunc(restOfLine,lineNum);
+			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
+			stringFunc(restOfLine,lineNum);
+		}
+		else if (strcmp(instructions[2],isInstruction(token+1)) == 0){		
+			if (flagLabel) {
+			addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);
+			}
+			else{
+				addError(NO_LABEL_FOR_MATRIX,lineNum);			
+				return;
+			}									
+			matFunc(restOfLine,lineNum);
+		}
+		else if (strcmp(instructions[3],isInstruction(token+1)) == 0){		
+			return;
+		}
+		else if (strcmp(instructions[4],isInstruction(token+1)) == 0){		
+			externFunc(restOfLine,lineNum);
+		}			
 	}
 }
 
-/*
+
 int main(){
 	int i;
-	char line1[80] = {"MAIN:    .data   +8,   105 , -8 , -89    "};
-	char line2[80] = {"MAN:    .data +7,   -5a76   , *178,1+9"};
-	
-	char line3[80] = {"MAIN:    .data +7,   -57   , 17,9"};	
-	char line4[80] = {"MAIN    .mat [2][2]"}; 
-	analizeLine(line3, 3);   
+	char line1[80] = {"MAIN:    .data 2,1   "};
+	char line2[80] = {"m34:    .mat [2][2]   "};
 
+	
+	char line3[80] = {"m35:    .mat [2][2]"};	
+	/*
+	char line4[80] = {"MAIN    .mat [2][2]"}; 
+
+	   
+	*/
 	analizeLine(line1, 1);	
 	analizeLine(line2, 2);
+	analizeLine(line3, 3);
 	for (i=0;i<DC;i++){
 		printf("%d , %s\n",dataArray[i].mw.word,convertToWeirdFour(dataArray[i].mw.word));
 	}
 	printSymbolList(SymbolTable);
 	printErrorList(errorList);	
+	
 	return 0;
 }
-*/
+
