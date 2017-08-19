@@ -1,6 +1,162 @@
 #include "SharedHeaderFile.h"
 #include "SecondTransitionHeader.h"
 
+char* tabArray = "/t";
+
+cmd movs[] = 
+{
+	{TWO_REGISTER,movTwoRegisterCmd},
+	{REGISTER_SYMBOL,movRegisterSymbolCmd},
+	{REGISTER_MATRIX,movRegisterMatrixCmd},
+	{MATRIX_REGISTER,movMatrixRegisterCmd},
+	{SYMBOL_REGISTER,movSymbolRegisterCmd},
+	{SYMBOL_MATRIX,movSymbolMatrixCmd},
+	{MATRIX_SYMBOL,movMatrixSymbolCmd},
+	{SYMBOL_SYMBOL,movSymbolSymbolCmd},
+	{MATRIX_MATRIX,movMatrixMatrixCmd},
+	{VALUE_REGISTER,movValueRegisterCmd},
+	{VALUE_SYMBOL,movValueSymbolCmd},
+	{VALUE_MATRIX,movValueMatrixCmd}
+};
+
+
+cmd cmps[] = 
+{
+	{TWO_REGISTER,cmpTwoRegisterCmd},
+	{REGISTER_SYMBOL,cmpRegisterSymbolCmd},
+	{REGISTER_MATRIX,cmpRegisterMatrixCmd},
+	{MATRIX_REGISTER,cmpMatrixRegisterCmd},
+	{SYMBOL_REGISTER,cmpSymbolRegisterCmd},
+	{SYMBOL_MATRIX,cmpSymbolMatrixCmd},
+	{MATRIX_SYMBOL,cmpMatrixSymbolCmd},
+	{SYMBOL_SYMBOL,cmpSymbolSymbolCmd},
+	{MATRIX_MATRIX,cmpMatrixMatrixCmd},
+	{VALUE_REGISTER,cmpValueRegisterCmd},
+	{VALUE_SYMBOL,cmpValueSymbolCmd},
+	{VALUE_MATRIX,cmpValueMatrixCmd}
+};
+
+cmd adds[] = 
+{
+	{TWO_REGISTER,addTwoRegisterCmd},
+	{REGISTER_SYMBOL,addRegisterSymbolCmd},
+	{REGISTER_MATRIX,addRegisterMatrixCmd},
+	{MATRIX_REGISTER,addMatrixRegisterCmd},
+	{SYMBOL_REGISTER,addSymbolRegisterCmd},
+	{SYMBOL_MATRIX,addSymbolMatrixCmd},
+	{MATRIX_SYMBOL,addMatrixSymbolCmd},
+	{SYMBOL_SYMBOL,addSymbolSymbolCmd},
+	{MATRIX_MATRIX,addMatrixMatrixCmd},
+	{VALUE_REGISTER,addValueRegisterCmd},
+	{VALUE_SYMBOL,addValueSymbolCmd},
+	{VALUE_MATRIX,addValueMatrixCmd}
+};
+
+cmd subs[] = 
+{
+	{TWO_REGISTER,subTwoRegisterCmd},
+	{REGISTER_SYMBOL,subRegisterSymbolCmd},
+	{REGISTER_MATRIX,subRegisterMatrixCmd},
+	{MATRIX_REGISTER,subMatrixRegisterCmd},
+	{SYMBOL_REGISTER,subSymbolRegisterCmd},
+	{SYMBOL_MATRIX,subSymbolMatrixCmd},
+	{MATRIX_SYMBOL,subMatrixSymbolCmd},
+	{SYMBOL_SYMBOL,subSymbolSymbolCmd},
+	{MATRIX_MATRIX,subMatrixMatrixCmd},
+	{VALUE_REGISTER,subValueRegisterCmd},
+	{VALUE_SYMBOL,subValueSymbolCmd},
+	{VALUE_MATRIX,subValueMatrixCmd}
+};
+
+cmd leas[] = 
+{
+	{TWO_REGISTER,leaTwoRegisterCmd},
+	{REGISTER_SYMBOL,leaRegisterSymbolCmd},
+	{REGISTER_MATRIX,leaRegisterMatrixCmd},
+	{MATRIX_REGISTER,leaMatrixRegisterCmd},
+	{SYMBOL_REGISTER,leaSymbolRegisterCmd},
+	{SYMBOL_MATRIX,leaSymbolMatrixCmd},
+	{MATRIX_SYMBOL,leaMatrixSymbolCmd},
+	{SYMBOL_SYMBOL,leaSymbolSymbolCmd},
+	{MATRIX_MATRIX,leaMatrixMatrixCmd},
+	{VALUE_REGISTER,leaValueRegisterCmd},
+	{VALUE_SYMBOL,leaValueSymbolCmd},
+	{VALUE_MATRIX,leaValueMatrixCmd}
+};
+
+cmd nots[] =
+{
+	{ONE_REGISTER,notRegisterCmd},
+	{ONE_SYMBOL,notSymbolCmd},
+	{ONE_MATRIX,notMatrixCmd}
+};
+
+cmd clrs[] =
+{
+	{ONE_REGISTER,clrRegisterCmd},
+	{ONE_SYMBOL,clrSymbolCmd},
+	{ONE_MATRIX,clrMatrixCmd}
+};
+
+cmd incs[] =
+{
+	{ONE_REGISTER,incRegisterCmd},
+	{ONE_SYMBOL,incSymbolCmd},
+	{ONE_MATRIX,incMatrixCmd}
+};
+
+cmd decs[] =
+{
+	{ONE_REGISTER,decRegisterCmd},
+	{ONE_SYMBOL,decSymbolCmd},
+	{ONE_MATRIX,decMatrixCmd}
+};
+
+cmd jmps[] =
+{
+	{ONE_REGISTER,jmpRegisterCmd},
+	{ONE_SYMBOL,jmpSymbolCmd},
+	{ONE_MATRIX,jmpMatrixCmd}
+};
+
+cmd bnes[] =
+{
+	{ONE_REGISTER,bneRegisterCmd},
+	{ONE_SYMBOL,bneSymbolCmd},
+	{ONE_MATRIX,bneMatrixCmd}
+};
+
+cmd reds[] =
+{
+	{ONE_REGISTER,redRegisterCmd},
+	{ONE_SYMBOL,redSymbolCmd},
+	{ONE_MATRIX,redMatrixCmd}
+};
+
+cmd prns[] =
+{
+	{ONE_REGISTER,prnRegisterCmd},
+	{ONE_SYMBOL,prnSymbolCmd},
+	{ONE_MATRIX,prnMatrixCmd}
+};
+
+cmd jsrs[] =
+{
+	{ONE_REGISTER,jsrRegisterCmd},
+	{ONE_SYMBOL,jsrSymbolCmd},
+	{ONE_MATRIX,jsrMatrixCmd}
+};
+
+cmd rtss[] =
+{
+	{NONE_PARAMETERS,rtsCmd}
+};
+
+cmd stops[] =
+{
+	{NONE_PARAMETERS,StopCmd}
+};
+
 /*A function to readdress all the symbols address in the symbol table*/
 void readdressSymbolTable()
 {
@@ -10,7 +166,7 @@ void readdressSymbolTable()
 	{
 		if(current->external == 0 && current->action == 0)
 		{
-			current->addresse += IC;
+			current->address += IC;
 		}
 		current = current->next;
 	}
@@ -75,7 +231,7 @@ void movRegisterSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -110,7 +266,7 @@ void movRegisterMatrixCmd(parms data)
 		DesinationMatrixParam.symParam.encodingType = External;
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -146,7 +302,7 @@ void movMatrixRegisterCmd(parms data)
 		SourceMatrixParam.symParam.encodingType = External;
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -191,7 +347,7 @@ void movSymbolRegisterCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -229,7 +385,7 @@ void movSymbolMatrixCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -239,7 +395,7 @@ void movSymbolMatrixCmd(parms data)
 		DesinationMatrixParam.symParam.encodingType = External;
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -278,7 +434,7 @@ void movMatrixSymbolCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -299,7 +455,7 @@ void movMatrixSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -329,7 +485,7 @@ void movSymbolSymbolCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -342,7 +498,7 @@ void movSymbolSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -374,7 +530,7 @@ void movMatrixMatrixCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -395,7 +551,7 @@ void movMatrixMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -471,7 +627,7 @@ void movValueSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType  = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -509,7 +665,7 @@ void movValueMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -609,7 +765,7 @@ void cmpSymbolValueCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -647,7 +803,7 @@ void cmpMatrixValueCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -723,7 +879,7 @@ void cmpRegisterSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -761,7 +917,7 @@ void cmpRegisterMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -800,7 +956,7 @@ void cmpMatrixRegisterCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -845,7 +1001,7 @@ void cmpSymbolRegisterCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -883,7 +1039,7 @@ void cmpSymbolMatrixCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -896,7 +1052,7 @@ void cmpSymbolMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -935,7 +1091,7 @@ void cmpMatrixSymbolCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -956,7 +1112,7 @@ void cmpMatrixSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -986,7 +1142,7 @@ void cmpSymbolSymbolCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -999,7 +1155,7 @@ void cmpSymbolSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1031,7 +1187,7 @@ void cmpMatrixMatrixCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1049,7 +1205,7 @@ void cmpMatrixMatrixCmd(parms data)
 		DesinationMatrixParam.symParam.encodingType = External;
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1125,7 +1281,7 @@ void cmpValueSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1163,7 +1319,7 @@ void cmpValueMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1232,7 +1388,7 @@ void addRegisterSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1270,7 +1426,7 @@ void addRegisterMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1309,7 +1465,7 @@ void addMatrixRegisterCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1354,7 +1510,7 @@ void addSymbolRegisterCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -1392,7 +1548,7 @@ void addMatrixSymbolCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1413,7 +1569,7 @@ void addMatrixSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1443,7 +1599,7 @@ void addSymbolSymbolCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -1456,7 +1612,7 @@ void addSymbolSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1487,7 +1643,7 @@ void addSymbolMatrixCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -1500,7 +1656,7 @@ void addSymbolMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1540,7 +1696,7 @@ void addMatrixMatrixCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1561,7 +1717,7 @@ void addMatrixMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1637,7 +1793,7 @@ void addValueSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1675,7 +1831,7 @@ void addValueMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1744,7 +1900,7 @@ void subRegisterSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -1782,7 +1938,7 @@ void subRegisterMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1820,7 +1976,7 @@ void subSymbolRegisterCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -1858,7 +2014,7 @@ void subMatrixRegisterCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1905,7 +2061,7 @@ void subMatrixMatrixCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -1926,7 +2082,7 @@ void subMatrixMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -1964,7 +2120,7 @@ void subSymbolSymbolCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -1977,7 +2133,7 @@ void subSymbolSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2008,7 +2164,7 @@ void subMatrixSymbolCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -2029,7 +2185,7 @@ void subMatrixSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2060,7 +2216,7 @@ void subSymbolMatrixCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -2073,7 +2229,7 @@ void subSymbolMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2150,7 +2306,7 @@ void subValueSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2188,7 +2344,7 @@ void subValueMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2257,7 +2413,7 @@ void leaRegisterSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2288,7 +2444,7 @@ void leaMatrixSymbolCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -2309,7 +2465,7 @@ void leaMatrixSymbolCmd(parms data)
 	}
 	else
 		destinationSymbolParam.symParam.encodingType = Relocatable;
-	destinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	destinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = destinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2347,7 +2503,7 @@ void leaRegisterMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2385,7 +2541,7 @@ void leaSymbolRegisterCmd(parms data)
 	}
 	else
 		sourceSymbolParam.symParam.encodingType = Relocatable;
-	sourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	sourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = sourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -2423,7 +2579,7 @@ void leaMatrixRegisterCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -2468,7 +2624,7 @@ void leaSymbolSymbolCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -2481,7 +2637,7 @@ void leaSymbolSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2512,7 +2668,7 @@ void leaSymbolMatrixCmd(parms data)
 	}
 	else
 		SourceSymbolParam.symParam.encodingType = Relocatable;
-	SourceSymbolParam.symParam.addressValue = data.symbolSource->addresse;
+	SourceSymbolParam.symParam.addressValue = data.symbolSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceSymbolParam.fullSymbolParam;
 	IC++;
@@ -2525,7 +2681,7 @@ void leaSymbolMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2565,7 +2721,7 @@ void leaMatrixMatrixCmd(parms data)
 	}
 	else
 		SourceMatrixParam.symParam.encodingType = Relocatable;
-	SourceMatrixParam.symParam.addressValue = data.matrixSource->addresse;
+	SourceMatrixParam.symParam.addressValue = data.matrixSource->address;
 
 	cpuFullMemory[IC].fullReg = SourceMatrixParam.fullSymbolParam;
 	IC++;
@@ -2586,7 +2742,7 @@ void leaMatrixMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2662,7 +2818,7 @@ void leaValueSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2700,7 +2856,7 @@ void leaValueMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2758,7 +2914,7 @@ void notSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2787,7 +2943,7 @@ void notMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2845,7 +3001,7 @@ void clrSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2874,7 +3030,7 @@ void clrMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -2932,7 +3088,7 @@ void incSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -2961,7 +3117,7 @@ void incMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3019,7 +3175,7 @@ void decSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3048,7 +3204,7 @@ void decMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3106,7 +3262,7 @@ void jmpSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3135,7 +3291,7 @@ void jmpMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3193,7 +3349,7 @@ void bneSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3222,7 +3378,7 @@ void bneMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3280,7 +3436,7 @@ void redSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3309,7 +3465,7 @@ void redMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3389,7 +3545,7 @@ void prnSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3418,7 +3574,7 @@ void prnMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3476,7 +3632,7 @@ void jsrSymbolCmd(parms data)
 	}
 	else
 		DesinationSymbolParam.symParam.encodingType = Relocatable;
-	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->addresse;
+	DesinationSymbolParam.symParam.addressValue = data.symbolDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationSymbolParam.fullSymbolParam;
 	IC++;
@@ -3505,7 +3661,7 @@ void jsrMatrixCmd(parms data)
 	}
 	else
 		DesinationMatrixParam.symParam.encodingType = Relocatable;
-	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->addresse;
+	DesinationMatrixParam.symParam.addressValue = data.matrixDestination->address;
 
 	cpuFullMemory[IC].fullReg = DesinationMatrixParam.fullSymbolParam;
 	IC++;
@@ -3523,7 +3679,6 @@ void jsrMatrixCmd(parms data)
 void rtsCmd(parms data)
 {
 	commandBitField newRtsCommand;
-	registersParam newRegistersParam;
 
 	newRtsCommand.fullCommandInt = 0;
 	newRtsCommand.cBitField.encodingType = Absolute;
@@ -3537,7 +3692,6 @@ void rtsCmd(parms data)
 void StopCmd(parms data)
 {
 	commandBitField newRtsCommand;
-	registersParam newRegistersParam;
 
 	newRtsCommand.fullCommandInt = 0;
 	newRtsCommand.cBitField.encodingType = Absolute;
@@ -3570,7 +3724,7 @@ void addToEntryFile(pSymbol entrySymbol)
 }
 
 /*A function to move over the lines in a file and create the extern, entry and object file*/
-void moveOverFile(FILE* currentFile , char* currentFileName)
+void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 {
 	/*Create the current extern, entry and object file that related to the current file*/
 	char* currentExternFileName;
@@ -3580,6 +3734,7 @@ void moveOverFile(FILE* currentFile , char* currentFileName)
 	int fileChar; 
 	
 	int ind = 0;
+	int lineNum = 0;
 
 	currentExternFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
 	currentEntryFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
@@ -3616,24 +3771,27 @@ void moveOverFile(FILE* currentFile , char* currentFileName)
 
 	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
 	ind = 0;
-	while(fileChar = fgetc(currentFile))
+	lineNum = 1;
+	while((fileChar = fgetc(currentFile)))
 	{
 		if(fileChar == '\n')
 		{
 			startLine[ind] = '\0';
-			analizeLineSecTransition(startLine);
+			analizeLineSecTransition(startLine , lineNum);
 			ind = 0;
+			lineNum++;
 			continue;
 		}
 		if (fileChar == EOF)
 		{
 			startLine[ind] = '\0';
-			analizeLineSecTransition(startLine);
+			analizeLineSecTransition(startLine, lineNum);
 			ind = 0;
+			lineNum++;
 			break;
 		}
 		else
-            startLine[ind++] = (char)fileChar;
+            		startLine[ind++] = (char)fileChar;
 	}
 
 	writeObjectFile();
@@ -3715,15 +3873,15 @@ eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eA
 	return NONE_PARAMETERS;
 }
 
+
 /*A function to analize a line in the the second transition*/
-int analizeLineSecTransition(char *line)
+int analizeLineSecTransition(char *line , int lineNum)
 {
 	char* cmdName;
 	parms funcParms;
 	cmd currentCmd;
 	eParametersType funcParametersType;
 	unsigned int numOfParams;
-	bool gotFirstParam = false , gotSecondParam = false;
 	eAddressingMethod firstParamAddressingMethod;
 	int count = 0;
 
@@ -3903,6 +4061,8 @@ int analizeLineSecTransition(char *line)
 								if(numOfParams == 2)
 								{
 										funcParms.matrixSource = findSymbolByLabel(word);
+										if(funcParms.matrixSource == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 										funcParms.eMatrixRegRowSource = registerSource;
 										funcParms.eMatrixRegColumnSource = registerDestination;
 										firstParamAddressingMethod = MatrixAccess;
@@ -3912,6 +4072,8 @@ int analizeLineSecTransition(char *line)
 									if(numOfParams == 1)
 									{
 										funcParms.matrixDestination = findSymbolByLabel(word);
+										if(funcParms.matrixDestination == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 										funcParms.eMatrixRegRowDestination = registerSource;
 										funcParms.eMatrixRegColumnDestination = registerDestination;
 										funcParametersType = ONE_MATRIX;
@@ -3923,6 +4085,8 @@ int analizeLineSecTransition(char *line)
 								if(numOfParams == 2)
 								{
 									funcParms.symbolSource = findSymbolByLabel(word);
+									if(funcParms.symbolSource == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 									firstParamAddressingMethod = Direct;
 								}
 								else
@@ -3930,6 +4094,8 @@ int analizeLineSecTransition(char *line)
 									if(numOfParams == 1)
 									{
 										funcParms.symbolDestination = findSymbolByLabel(word);
+										if(funcParms.symbolDestination == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 										funcParametersType = ONE_SYMBOL;
 									}
 								}
@@ -4042,6 +4208,8 @@ int analizeLineSecTransition(char *line)
 										case 7: registerDestination = r7; break;
 									}
 									funcParms.matrixDestination = findSymbolByLabel(word);
+									if(funcParms.matrixDestination == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 									funcParms.eMatrixRegRowDestination = registerSource;
 									funcParms.eMatrixRegColumnDestination = registerDestination;
 									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , MatrixAccess);
@@ -4049,6 +4217,8 @@ int analizeLineSecTransition(char *line)
 								else
 								{
 									funcParms.symbolDestination = findSymbolByLabel(word);
+									if(funcParms.symbolDestination == NULL)
+											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
 									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Direct);
 								}
 								free(word);
@@ -4076,6 +4246,7 @@ cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType)
 	int i;
 	int cmdId;
 	cmd* cmds;
+	cmd cNull;
 
 	/*find the current command array*/
 	for (i=0;i<16;i++)
@@ -4115,6 +4286,10 @@ cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType)
 			return (*cmds);
 		}
 	}
+	return cNull;
 
 }
+
+
+
 
