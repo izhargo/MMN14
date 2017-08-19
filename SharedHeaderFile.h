@@ -4,16 +4,16 @@
 
 #include <stdlib.h>
 
-#define MAXLINE	80
-#define MAXLABEL 30
-#define MAXWORD 30
+#include <ctype.h>
+
 #define opLength 4
 #define numInstructions 5
 #define numRegisters 8
-
-
 #define WORDLENGTH 10
+#define MAXLABEL 30
+#define MAXLINE	80
 #define SIZEARRAY 100
+
 #define ENTRY ".ENTRY"
 #define EXTERN ".EXTERN"
 #define DATA ".DATA"
@@ -55,9 +55,9 @@ typedef union registers
 
 	{
 
-		short reg : 10;
+		int reg : 10;
 
-		short unused : 6;
+		int unused : 6;
 
 	} r;
 
@@ -99,7 +99,7 @@ typedef union valueParam
 
 		unsigned int encodingType : 2;
 
-		short numericValue : 8;
+		int numericValue : 8;
 
 		unsigned int unused : 6;
 
@@ -119,7 +119,7 @@ typedef union symbolParam
 
 		unsigned int encodingType : 2;
 
-		short addressValue : 8;
+		int addressValue : 8;
 
 		unsigned int unused : 6;
 
@@ -137,17 +137,15 @@ typedef union memoryWord
 
 	{
 
-		short word : 10;
+		int word : 10;
 
-		short unused : 6;
+		int unused : 6;
 
 	} mw;
 
 	short fullReg;
 
 } memoryWord;
-
-extern memoryWord dataArray[];
 
 
 
@@ -158,6 +156,8 @@ typedef struct
 	unsigned int opcodeNum;
 
 	char* opcodeName;
+
+	unsigned int numOfParams;
 
 } opcodeStruct;
 
@@ -194,12 +194,11 @@ typedef enum {Immediate = 0 , Direct = 1 , MatrixAccess = 2 , DirectRegister = 3
 
 typedef enum {A = 0 , B = 1 , C = 2 , D = 3} eWierdFourCountNums;
 
-
-
 registers cpuRegisters[8];
 
 memoryWord cpuFullMemory[256];
 
+extern memoryWord dataArray[SIZEARRAY];
 
 
 char* convertToWeirdFour(short);
@@ -212,10 +211,9 @@ extern int DC;
 
 FILE* currentExternFile;
 FILE* currentEntryFile;
+FILE* currentObjectFile;
 
 
-
-unsigned int getNumOfParamsOfOpCode(char *word);
 
 typedef struct symbol* pSymbol; /*represent a pointer to a single symbol*/
 
@@ -231,7 +229,6 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 	int address;	
 
-	
 
 
 	unsigned int action:1;
@@ -241,16 +238,12 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 	unsigned int external:1;
 
 
-	
-	
 
 	pSymbol	next;
 
-	
 
 
 }symbol;
-
 
 
 
@@ -258,34 +251,16 @@ extern pSymbol SymbolTable;
 
 extern pSymbol SymbolTableLast;
 
-
-typedef enum errors {NONE,WRONG_INPUT_IN_LABEL,SYMBOL_ALREADY_IN_THE_TABLE,LABEL_INPUT_TOO_LONG,WRONG_INSTRUCTION_NAME, WRONG_PARAMETER_VALUE,WRONG_MATRIX_SIZE,WRONG_MATRIX_PARAMETER_VALUE,NO_LABEL_FOR_MATRIX, WRONG_OPERAND,TOO_MANY_OPERANDS,NO_LABEL_FOR_EXTERN_INSTRUCTION,ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION} errorType;
-
-  
+typedef enum errors {NONE,WRONG_INPUT_IN_LABEL,SYMBOL_ALREADY_IN_THE_TABLE,LABEL_INPUT_TOO_LONG,WRONG_INSTRUCTION_NAME, WRONG_PARAMETER_VALUE,WRONG_MATRIX_SIZE,WRONG_MATRIX_PARAMETER_VALUE,NO_LABEL_FOR_MATRIX, WRONG_OPERAND,TOO_MANY_OPERANDS,NO_LABEL_FOR_EXTERN_INSTRUCTION,ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,LABEL_INPUT_NOT_EXSIST,WRONG_INPUT_VALUE} errorType;
 
 typedef struct errorNode* Errorptr;
 
-
-
-typedef struct errorNode{
-
-
-
+typedef struct errorNode
+{
 	errorType title;
-
-
-
 	int lineNumber;
-
-
-
 	Errorptr next;
-
-
-
 } error_node;
-
-
 
 extern Errorptr errorList;
 
@@ -294,7 +269,6 @@ extern Errorptr errorListLast;
 
 
 /*function adds an error to the linked list of errors in the assembly program*/ 
-
 void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine);
 const char *getError(errorType e);
 void printErrorList(Errorptr head);
@@ -303,3 +277,6 @@ void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigne
 pSymbol findSymbolByLabel(char *label);
 void printSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);
+unsigned int getNumOfOpCode(char *word);
+
+
