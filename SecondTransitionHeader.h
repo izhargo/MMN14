@@ -17,13 +17,6 @@ typedef struct parms
 	short destinationNum;
 } parms;
 
-typedef struct
-{
-	eParametersType paramFunc;
-	void (*func)(parms);
-} cmd;
-
-char* tabArray = "/t";
 typedef enum 
 {
 	VALUE_VALUE,
@@ -49,167 +42,14 @@ typedef enum
 	NONE_PARAMETERS
 } eParametersType;
 
-cmd movs[] = 
+typedef struct
 {
-	{TWO_REGISTER,movTwoRegisterCmd},
-	{REGISTER_SYMBOL,movRegisterSymbolCmd},
-	{REGISTER_MATRIX,movRegisterMatrixCmd},
-	{MATRIX_REGISTER,movMatrixRegisterCmd},
-	{SYMBOL_REGISTER,movSymbolRegisterCmd},
-	{SYMBOL_MATRIX,movSymbolMatrixCmd},
-	{MATRIX_SYMBOL,movMatrixSymbolCmd},
-	{SYMBOL_SYMBOL,movSymbolSymbolCmd},
-	{MATRIX_MATRIX,movMatrixMatrixCmd},
-	{VALUE_REGISTER,movValueRegisterCmd},
-	{VALUE_SYMBOL,movValueSymbolCmd},
-	{VALUE_MATRIX,movValueMatrixCmd}
-};
-
-cmd cmps[] = 
-{
-	{TWO_REGISTER,cmpTwoRegisterCmd},
-	{REGISTER_SYMBOL,cmpRegisterSymbolCmd},
-	{REGISTER_MATRIX,cmpRegisterMatrixCmd},
-	{MATRIX_REGISTER,cmpMatrixRegisterCmd},
-	{SYMBOL_REGISTER,cmpSymbolRegisterCmd},
-	{SYMBOL_MATRIX,cmpSymbolMatrixCmd},
-	{MATRIX_SYMBOL,cmpMatrixSymbolCmd},
-	{SYMBOL_SYMBOL,cmpSymbolSymbolCmd},
-	{MATRIX_MATRIX,cmpMatrixMatrixCmd},
-	{VALUE_REGISTER,cmpValueRegisterCmd},
-	{VALUE_SYMBOL,cmpValueSymbolCmd},
-	{VALUE_MATRIX,cmpValueMatrixCmd}
-};
-
-cmd adds[] = 
-{
-	{TWO_REGISTER,addTwoRegisterCmd},
-	{REGISTER_SYMBOL,addRegisterSymbolCmd},
-	{REGISTER_MATRIX,addRegisterMatrixCmd},
-	{MATRIX_REGISTER,addMatrixRegisterCmd},
-	{SYMBOL_REGISTER,addSymbolRegisterCmd},
-	{SYMBOL_MATRIX,addSymbolMatrixCmd},
-	{MATRIX_SYMBOL,addMatrixSymbolCmd},
-	{SYMBOL_SYMBOL,addSymbolSymbolCmd},
-	{MATRIX_MATRIX,addMatrixMatrixCmd},
-	{VALUE_REGISTER,addValueRegisterCmd},
-	{VALUE_SYMBOL,addValueSymbolCmd},
-	{VALUE_MATRIX,addValueMatrixCmd}
-};
-
-cmd subs[] = 
-{
-	{TWO_REGISTER,subTwoRegisterCmd},
-	{REGISTER_SYMBOL,subRegisterSymbolCmd},
-	{REGISTER_MATRIX,subRegisterMatrixCmd},
-	{MATRIX_REGISTER,subMatrixRegisterCmd},
-	{SYMBOL_REGISTER,subSymbolRegisterCmd},
-	{SYMBOL_MATRIX,subSymbolMatrixCmd},
-	{MATRIX_SYMBOL,subMatrixSymbolCmd},
-	{SYMBOL_SYMBOL,subSymbolSymbolCmd},
-	{MATRIX_MATRIX,subMatrixMatrixCmd},
-	{VALUE_REGISTER,subValueRegisterCmd},
-	{VALUE_SYMBOL,subValueSymbolCmd},
-	{VALUE_MATRIX,subValueMatrixCmd}
-};
-
-cmd leas[] = 
-{
-	{TWO_REGISTER,leaTwoRegisterCmd},
-	{REGISTER_SYMBOL,leaRegisterSymbolCmd},
-	{REGISTER_MATRIX,leaRegisterMatrixCmd},
-	{MATRIX_REGISTER,leaMatrixRegisterCmd},
-	{SYMBOL_REGISTER,leaSymbolRegisterCmd},
-	{SYMBOL_MATRIX,leaSymbolMatrixCmd},
-	{MATRIX_SYMBOL,leaMatrixSymbolCmd},
-	{SYMBOL_SYMBOL,leaSymbolSymbolCmd},
-	{MATRIX_MATRIX,leaMatrixMatrixCmd},
-	{VALUE_REGISTER,leaValueRegisterCmd},
-	{VALUE_SYMBOL,leaValueSymbolCmd},
-	{VALUE_MATRIX,leaValueMatrixCmd}
-};
-
-cmd nots[] =
-{
-	{ONE_REGISTER,notRegisterCmd},
-	{ONE_SYMBOL,notSymbolCmd},
-	{ONE_MATRIX,notMatrixCmd}
-};
-
-cmd clrs[] =
-{
-	{ONE_REGISTER,clrRegisterCmd},
-	{ONE_SYMBOL,clrSymbolCmd},
-	{ONE_MATRIX,clrMatrixCmd}
-};
-
-cmd incs[] =
-{
-	{ONE_REGISTER,incRegisterCmd},
-	{ONE_SYMBOL,incSymbolCmd},
-	{ONE_MATRIX,incMatrixCmd}
-};
-
-cmd decs[] =
-{
-	{ONE_REGISTER,decRegisterCmd},
-	{ONE_SYMBOL,decSymbolCmd},
-	{ONE_MATRIX,decMatrixCmd}
-};
-
-cmd jmps[] =
-{
-	{ONE_REGISTER,jmpRegisterCmd},
-	{ONE_SYMBOL,jmpSymbolCmd},
-	{ONE_MATRIX,jmpMatrixCmd}
-};
-
-cmd bnes[] =
-{
-	{ONE_REGISTER,bneRegisterCmd},
-	{ONE_SYMBOL,bneSymbolCmd},
-	{ONE_MATRIX,bneMatrixCmd}
-};
-
-cmd reds[] =
-{
-	{ONE_REGISTER,redRegisterCmd},
-	{ONE_SYMBOL,redSymbolCmd},
-	{ONE_MATRIX,redMatrixCmd}
-};
-
-cmd prns[] =
-{
-	{ONE_REGISTER,prnRegisterCmd},
-	{ONE_SYMBOL,prnSymbolCmd},
-	{ONE_MATRIX,prnMatrixCmd}
-};
-
-cmd jsrs[] =
-{
-	{ONE_REGISTER,jsrRegisterCmd},
-	{ONE_SYMBOL,jsrSymbolCmd},
-	{ONE_MATRIX,jsrMatrixCmd}
-};
-
-cmd rtss[] =
-{
-	{NONE_PARAMETERS,rtsCmd}
-};
-
-cmd stops[] =
-{
-	{NONE_PARAMETERS,StopCmd}
-};
+	eParametersType paramFunc;
+	void (*func)(parms);
+} cmd;
 
 
-void readdressSymbolTable();
-int analizeLineSecTransition(char *line);
-cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType);
-void addToExternFile(pSymbol externSymbol);
-void addToEntryFile(pSymbol entrySymbol);
-eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eAddressingMethod secondParam);
-void writeObjectFile();
+char* tabArray;
 
 /*mov commands*/
 void movTwoRegisterCmd(parms data);
@@ -336,3 +176,13 @@ void rtsCmd(parms data);
 
 /*stop command*/
 void StopCmd(parms data);
+
+void readdressSymbolTable();
+void moveOverFileTwo(FILE* currentFile , char* currentFileName);
+int analizeLineSecTransition(char *line , int lineNum);
+cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType);
+void addToExternFile(pSymbol externSymbol);
+void addToEntryFile(pSymbol entrySymbol);
+eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eAddressingMethod secondParam);
+void writeObjectFile();
+
