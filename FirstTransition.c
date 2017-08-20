@@ -4,6 +4,10 @@
 #include <ctype.h>
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
+#define MAXLINE 80
+#define MAXLABEL 30
+#define MAXWORD 30
+
 
 binWord bin;
 
@@ -326,7 +330,11 @@ int calcOneOperand0123(char *str, int lineNum){
 	char *token;
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;
-	if (str[0]=='#'){/*immediate address (0)*/
+	if (isInteger(str)){	
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
+	}
+	else if (str[0]=='#'){/*immediate address (0)*/
 		if (isInteger(str+1)){
 			result++;
 		}
@@ -362,7 +370,11 @@ int calcOneOperand123(char *str, int lineNum){
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;	
-	if (str[0]=='#'){/*immediate address (0) not allowed*/
+	if (isInteger(str)){	
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
+	}	
+	else if (str[0]=='#'){/*immediate address (0) not allowed*/
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
 	}
@@ -394,7 +406,11 @@ int calcOneOperand12(char *str, int lineNum){
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;	
-	if (str[0]=='#'){/*immediate address (0), not allowed*/
+	if (isInteger(str)){	
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
+	}	
+	else if (str[0]=='#'){/*immediate address (0), not allowed*/
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
 	}
@@ -424,22 +440,29 @@ int calcOneOperand12(char *str, int lineNum){
 
 int oneOperandFunc(char *line,int opCode, int lineNum){
 	char *token;	
-	char op1[MAXWORD], rest[MAXWORD];
-	int checker;
+	char op1[MAXWORD];
 	int result = 0;
 	token = strtok(line," ");
-	token = strtok(NULL," ");
-	checker = sscanf(token,"%s" "%s" ,op1,rest);
-	if (checker>1){
-		addError(TOO_MANY_OPERANDS,lineNum);			
-		return 0;	
-	}
-	if (opCode == 12){
-		result = calcOneOperand0123(op1,lineNum);
+	if ((token = strtok(NULL,",")) != NULL){
+		sscanf(token, "%s", op1);
 	}
 	else{
-		result = calcOneOperand123(op1,lineNum);
+		addError(TOO_FEW_OPERANDS,lineNum);			
+		return 0;
 	}
+	if ((token = strtok(NULL," ")) != NULL){
+		addError(TOO_MANY_OPERANDS,lineNum);			
+		return 0;
+	}
+	else{
+		if (opCode == 12){
+			result = calcOneOperand0123(op1,lineNum);
+		}
+		else{
+			result = calcOneOperand123(op1,lineNum);
+		}
+	}
+	
 	return result;
 }
 
@@ -447,12 +470,22 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	char *token;		
 	char op1[MAXWORD], op2[MAXWORD];
 	int opVal1,opVal2;	
-	int result = 0;  
+	int result = 0; 
 	token = strtok(line," ");
-	token = strtok(NULL,",");
-	sscanf(token, "%s", op1);
-	token = strtok(NULL,",");
-	sscanf(token, "%s", op2); 
+	if ((token = strtok(NULL,",")) != NULL){
+		sscanf(token, "%s", op1);
+	}
+	else{
+		addError(TOO_FEW_OPERANDS,lineNum);			
+		return 0;		
+	}		
+	if ((token = strtok(NULL,",")) != NULL){
+		sscanf(token, "%s", op2); 
+	}
+	else{
+		addError(TOO_FEW_OPERANDS,lineNum);			
+		return 0;	
+	}
 	if ((token = strtok (NULL,",")) == NULL){
 		if (opCode == 1){
 			opVal1 = calcOneOperand0123(op1,lineNum);
@@ -602,12 +635,12 @@ void moveOverFileOne(FILE* currentFile)
 	free(startLine);
 }
 
-/*
+
 int main(){
 	int i;
 	
-	char line1[80] = {"END: stop "};
-	char line2[80] = {"ml: .mat [2][2]"};
+	char line1[80] = {"SR: red M2[r0][r7]"};
+	char line2[80] = {"ml: rts"};
 	analizeLine(line1, 1);
 	analizeLine(line2, 2);	
 	for (i=0;i<DC;i++){
@@ -618,5 +651,5 @@ int main(){
 	
 	return 0;
 }
-*/
+
 
