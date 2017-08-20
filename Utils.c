@@ -18,40 +18,29 @@ char* convertToWeirdFour(short wordShort)
 		/*Fit the right number to the number according to the wierdFourCountNums enum*/
 		switch(num)
 		{
-
 			case A : weirdFourWord[wordLoc] = 'a'; break;
 			case B : weirdFourWord[wordLoc] = 'b'; break;
 			case C : weirdFourWord[wordLoc] = 'c'; break;
-
 			case D : weirdFourWord[wordLoc] = 'd'; break;
-
 		}
-
 		wordLoc--;
 	}
 	wordLoc = (WORDLENGTH/2);
-
 	weirdFourWord[wordLoc] = 0;
 	return weirdFourWord;
 }
 
-
-
 /*A function to add an error to last place in the error list*/
-
 void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine)
-
 {
 	Errorptr temp,p;
 	temp = (Errorptr) malloc(sizeof(error_node));/* allocate memory for a new Error in list*/
 	if (!temp)
-
 	{
 		fprintf(stderr, "Memory allocation failed\n");
 		exit(0);
 
 	}
-
 	/*new item is put in a temporary node before entering the list*/
 	temp->title = err;
 	temp->lineNumber = numLine;
@@ -103,7 +92,6 @@ const char *getError(errorType e)
 /*prints error trace stack*/ 
 void printErrorList(Errorptr head)
 {
-
 	Errorptr p;
 	p = head;
 	while(p != NULL)
@@ -117,7 +105,6 @@ void printErrorList(Errorptr head)
 
 char *isOpCode(char *word)
 {
-
 	int i;
 
 	for (i=0;i<16;i++)
