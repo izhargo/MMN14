@@ -4,9 +4,6 @@
 #include <ctype.h>
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
-#define MAXLINE 80
-#define MAXLABEL 30
-#define MAXWORD 30
 
 
 binWord bin;
@@ -45,6 +42,32 @@ Errorptr errorListLast = NULL;
 memoryWord dataArray[SIZEARRAY];	
 int DC = 0; 
 int IC = 100;
+
+int isInteger(char *str);
+int isParam(char *str);
+int strcmpci(char *a, char *b);
+char *isRegister(char *str);
+char *isInstruction(char *str);
+void addError(errorType e, int lineNumber);
+void numToBin(int num);
+void numToNeg(int num);
+void addToDataArray(int num);
+int isBlank(char *str);
+void matFunc(char *str,int lineNumber);		
+void stringFunc(char *str,int lineNumber);		
+void dataFunc(char *str,int lineNumber);		
+void externFunc(char *str,int lineNumber);
+char *isLabel(char *word, int lineNumber);
+int calcOneOperand0123(char *str, int lineNum);	
+int calcOneOperand123(char *str, int lineNum);
+int calcOneOperand12(char *str, int lineNum);
+int oneOperandFunc(char *line,int opCode, int lineNum);
+int twoOperandFunc(char *line ,int opCode, int lineNum);
+void noOperand (char *line, int lineNum);
+void analizeLine(char *line, int lineNum);
+/*A function to move over file and analize each line in the file*/
+void moveOverFileOne(FILE* currentFile);
+
 
 int isInteger(char *str){
 	int i;
@@ -208,6 +231,8 @@ void matFunc(char *str,int lineNumber){
 			}
 		}
 	}
+	free(token);
+	free(tokenInner);
 }
 		
 void stringFunc(char *str,int lineNumber){		
@@ -233,6 +258,7 @@ void stringFunc(char *str,int lineNumber){
 			}		
 		}   
 	}
+	free(token);
 }		
 	
 void dataFunc(char *str,int lineNumber){		
@@ -248,7 +274,8 @@ void dataFunc(char *str,int lineNumber){
 			addError(WRONG_PARAMETER_VALUE,lineNumber);        
 			return;
 		}
-	}	
+	}
+	free(token);	
 }
 /*function makes a special label validation, different from the one in isLabel, due to requirements*/
 void externFunc(char *str,int lineNumber){
@@ -289,7 +316,9 @@ void externFunc(char *str,int lineNumber){
 			}
 			addToSymbolList(&SymbolTable, &SymbolTableLast, exLabel, 0, 0, 1, 0);
 		}
-	}	
+	}
+	free(token);
+	free(exLabel);	
 }
 
 char *isLabel(char *word, int lineNumber){
@@ -330,18 +359,18 @@ int calcOneOperand0123(char *str, int lineNum){
 	char *token;
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;
-	if (isInteger(str)){	
-		addError(WRONG_OPERAND_INPUT,lineNum);			
-		return 0;	
-	}
-	else if (str[0]=='#'){/*immediate address (0)*/
-		if (isInteger(str+1)){
+	if (str[0]=='#'){/*immediate address (0)*/
+		if (isParam(str+1)){
 			result++;
 		}
 		else{
 			addError(WRONG_OPERAND_INPUT,lineNum);			
 			return 0;
 		}
+	}
+	else if (isParam(str)){
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
 	}
 	else if (isRegister(str)){ /*register address (3)*/
 		result++;
@@ -363,6 +392,7 @@ int calcOneOperand0123(char *str, int lineNum){
 	else{ /*direct address, cannot validate in first transition*/
 		result++;
 	}
+
 	return result;
 }
 
@@ -370,11 +400,11 @@ int calcOneOperand123(char *str, int lineNum){
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;	
-	if (isInteger(str)){	
+	if (str[0]=='#'){/*immediate address (0) not allowed*/
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
-	}	
-	else if (str[0]=='#'){/*immediate address (0) not allowed*/
+	}
+	else if (isParam(str)){
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
 	}
@@ -398,7 +428,6 @@ int calcOneOperand123(char *str, int lineNum){
 	else{/*direct address, cannot validate in first transition*/
 		result++;
 	}
-	
 	return result;
 }
 
@@ -406,11 +435,11 @@ int calcOneOperand12(char *str, int lineNum){
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
 	int result = 0;	
-	if (isInteger(str)){	
+	if (str[0]=='#'){/*immediate address (0), not allowed*/
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
-	}	
-	else if (str[0]=='#'){/*immediate address (0), not allowed*/
+	}
+	else if (isParam(str)){
 		addError(WRONG_OPERAND_INPUT,lineNum);			
 		return 0;	
 	}
@@ -462,7 +491,7 @@ int oneOperandFunc(char *line,int opCode, int lineNum){
 			result = calcOneOperand123(op1,lineNum);
 		}
 	}
-	
+	free(token);
 	return result;
 }
 
@@ -509,6 +538,7 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	if ((isRegister(op1)) && (isRegister(op2)) && (opCode !=6)){
 		result += 1;	
 	}
+	free(token);
 	return result;
 }
 
@@ -522,6 +552,7 @@ void noOperand (char *line, int lineNum){
 		addError(TOO_MANY_OPERANDS,lineNum);			
 		return;
 	}
+	free(token);
 	return;
 }
 
@@ -529,6 +560,9 @@ void analizeLine(char *line, int lineNum){
 	char *label,*word1,*checker,*restOfLine;	
 	char token[MAXWORD];
 	int opCode, result;
+	if ((isBlank(line)) || (line[0] == ';' )){
+		return;	
+	}
     checker = strchr(line,':');
 	if (checker != NULL){ /* ":" appears in line*/           
 		word1 = strtok(line, ":");
@@ -595,7 +629,6 @@ void analizeLine(char *line, int lineNum){
 		addError(WRONG_COMMAND,lineNum);						
 		return;
 	}
-
 }
 
 /*A function to move over file and analize each line in the file*/
@@ -610,6 +643,7 @@ void moveOverFileOne(FILE* currentFile)
 	ind = 0;
 	while((fileChar = fgetc(currentFile)))
 	{
+			
 		if(fileChar == '\n')
 		{
 			startLine[ind] = '\0';

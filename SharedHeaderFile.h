@@ -12,6 +12,7 @@
 #define WORDLENGTH 10
 #define MAXLABEL 30
 #define MAXLINE	80
+#define MAXWORD 30
 #define SIZEARRAY 100
 
 #define ENTRY ".ENTRY"
