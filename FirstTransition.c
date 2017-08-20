@@ -518,6 +518,7 @@ void analizeLine(char *line, int lineNum){
 		}
 		else if (strcmp(instructions[0],isInstruction(token+1)) == 0){		
 			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0, 0);				
+
 			dataFunc(restOfLine,lineNum);
 		}
 		else if (strcmp(instructions[1],isInstruction(token+1)) == 0){		
@@ -563,6 +564,44 @@ void analizeLine(char *line, int lineNum){
 	}
 
 }
+
+/*A function to move over file and analize each line in the file*/
+void moveOverFileOne(FILE* currentFile)
+{
+	int lineNum = 1;
+	char* startLine;
+	int fileChar; 
+	int ind = 0;
+
+	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
+	ind = 0;
+	while((fileChar = fgetc(currentFile)))
+	{
+		if(fileChar == '\n')
+		{
+			startLine[ind] = '\0';
+			analizeLine(startLine , lineNum);
+			ind = 0;
+			lineNum++;
+			continue;
+		}
+		if (fileChar == EOF)
+		{
+			if(ind > 0)
+			{
+				startLine[ind] = '\0';
+				analizeLine(startLine , lineNum);
+				ind = 0;
+				lineNum++;
+			}
+			break;
+		}
+		else
+            		startLine[ind++] = (char)fileChar;
+	}
+	free(startLine);
+}
+
 /*
 int main(){
 	int i;
