@@ -3993,7 +3993,6 @@ int analizeLineSecTransition(char *line , int lineNum)
 						funcParametersType = ONE_VALUE;
 					}
 				}
-				free(number);
 			}
 			else
 			{
@@ -4175,7 +4174,6 @@ int analizeLineSecTransition(char *line , int lineNum)
 					number[count] = '\0';
 					funcParms.destinationNum = atoi(number);
 					funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Immediate);
-					free(number);
 				}
 				else
 				{
