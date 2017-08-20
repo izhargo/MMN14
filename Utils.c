@@ -22,26 +22,36 @@ char* convertToWeirdFour(short wordShort)
 			case A : weirdFourWord[wordLoc] = 'a'; break;
 			case B : weirdFourWord[wordLoc] = 'b'; break;
 			case C : weirdFourWord[wordLoc] = 'c'; break;
+
 			case D : weirdFourWord[wordLoc] = 'd'; break;
 
 		}
+
 		wordLoc--;
 	}
 	wordLoc = (WORDLENGTH/2);
+
 	weirdFourWord[wordLoc] = 0;
 	return weirdFourWord;
 }
 
+
+
 /*A function to add an error to last place in the error list*/
+
 void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine)
+
 {
 	Errorptr temp,p;
 	temp = (Errorptr) malloc(sizeof(error_node));/* allocate memory for a new Error in list*/
 	if (!temp)
+
 	{
 		fprintf(stderr, "Memory allocation failed\n");
 		exit(0);
+
 	}
+
 	/*new item is put in a temporary node before entering the list*/
 	temp->title = err;
 	temp->lineNumber = numLine;
@@ -51,6 +61,7 @@ void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine)
 		/*insert to an empty list*/
 		*last = temp;
 		*head = temp;
+
 	}
 	else 
 	{	
@@ -68,6 +79,7 @@ const char *getError(errorType e)
 	switch (e)
 	{
 		case NONE: return "NONE";
+		case WRONG_COMMAND: return "WRONG_COMMAND";
 		case WRONG_INPUT_IN_LABEL : return "WRONG_INPUT_IN_LABEL";
 		case SYMBOL_ALREADY_IN_THE_TABLE : return "SYMBOL_ALREADY_IN_THE_TABLE"; 
 		case LABEL_INPUT_TOO_LONG : return "LABEL_INPUT_TOO_LONG";		
