@@ -1365,10 +1365,10 @@ void addRegisterSymbolCmd(parms data)
 	symbolParam destinationSymbolParam;
 
 	newAddCommand.fullCommandInt = 0;
-	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
-	newAddCommand.cBitField.encodingType = DirectRegister;
+	newAddCommand.cBitField.encodingType = Absolute;
+	newAddCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1406,7 +1406,7 @@ void addRegisterMatrixCmd(parms data)
 	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
 	newAddCommand.cBitField.encodingType = DirectRegister;
 	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1452,7 +1452,7 @@ void addMatrixRegisterCmd(parms data)
 	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newAddCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1497,7 +1497,7 @@ void addSymbolRegisterCmd(parms data)
 	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Direct;
 	newAddCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newAddCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1535,7 +1535,7 @@ void addMatrixSymbolCmd(parms data)
 	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
 	newAddCommand.cBitField.encodingType = MatrixAccess;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1586,7 +1586,7 @@ void addSymbolSymbolCmd(parms data)
 	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
 	newAddCommand.cBitField.encodingType = Direct;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1630,7 +1630,7 @@ void addSymbolMatrixCmd(parms data)
 	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
 	newAddCommand.cBitField.encodingType = Direct;
 	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1683,7 +1683,7 @@ void addMatrixMatrixCmd(parms data)
 	newAddCommand.cBitField.sourceOperandAddressing = Absolute;
 	newAddCommand.cBitField.encodingType = MatrixAccess;
 	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1773,7 +1773,7 @@ void addValueSymbolCmd(parms data)
 	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Immediate;
 	newAddCommand.cBitField.destinationOperandAddressing = Direct;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1811,7 +1811,7 @@ void addValueMatrixCmd(parms data)
 	newAddCommand.cBitField.encodingType = Absolute;
 	newAddCommand.cBitField.sourceOperandAddressing = Immediate;
 	newAddCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newAddCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newAddCommand.cBitField.opcode = opcodesArray[2].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newAddCommand.fullCommandInt;
 	IC++;
@@ -1880,7 +1880,7 @@ void subRegisterSymbolCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.destinationOperandAddressing = Direct;
-	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -1918,7 +1918,7 @@ void subRegisterMatrixCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -1963,7 +1963,7 @@ void subSymbolRegisterCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2001,7 +2001,7 @@ void subMatrixRegisterCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newSubCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newSubCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2048,7 +2048,7 @@ void subMatrixMatrixCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2107,7 +2107,7 @@ void subSymbolSymbolCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = Direct;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2151,7 +2151,7 @@ void subMatrixSymbolCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newSubCommand.cBitField.destinationOperandAddressing = Direct;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2203,7 +2203,7 @@ void subSymbolMatrixCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Direct;
 	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2286,7 +2286,7 @@ void subValueSymbolCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Immediate;
 	newSubCommand.cBitField.destinationOperandAddressing = Direct;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2324,7 +2324,7 @@ void subValueMatrixCmd(parms data)
 	newSubCommand.cBitField.encodingType = Absolute;
 	newSubCommand.cBitField.sourceOperandAddressing = Immediate;
 	newSubCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newSubCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newSubCommand.cBitField.opcode = opcodesArray[3].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newSubCommand.fullCommandInt;
 	IC++;
@@ -2393,7 +2393,7 @@ void leaRegisterSymbolCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
-	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2431,7 +2431,7 @@ void leaMatrixSymbolCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
-	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2483,7 +2483,7 @@ void leaRegisterMatrixCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = DirectRegister;
 	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2528,7 +2528,7 @@ void leaSymbolRegisterCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
 	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2566,7 +2566,7 @@ void leaMatrixRegisterCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newLeaCommand.cBitField.destinationOperandAddressing = DirectRegister;
-	newLeaCommand.cBitField.opcode = opcodesArray[0].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2611,7 +2611,7 @@ void leaSymbolSymbolCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
 	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
-	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2655,7 +2655,7 @@ void leaSymbolMatrixCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Direct;
 	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2708,7 +2708,7 @@ void leaMatrixMatrixCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = MatrixAccess;
 	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2798,7 +2798,7 @@ void leaValueSymbolCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Immediate;
 	newLeaCommand.cBitField.destinationOperandAddressing = Direct;
-	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -2836,7 +2836,7 @@ void leaValueMatrixCmd(parms data)
 	newLeaCommand.cBitField.encodingType = Absolute;
 	newLeaCommand.cBitField.sourceOperandAddressing = Immediate;
 	newLeaCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newLeaCommand.cBitField.opcode = opcodesArray[1].opcodeNum;
+	newLeaCommand.cBitField.opcode = opcodesArray[6].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newLeaCommand.fullCommandInt;
 	IC++;
@@ -3162,7 +3162,7 @@ void decSymbolCmd(parms data)
 	newDecCommand.fullCommandInt = 0;
 	newDecCommand.cBitField.encodingType = Absolute;
 	newDecCommand.cBitField.destinationOperandAddressing = Direct;
-	newDecCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newDecCommand.cBitField.opcode = opcodesArray[8].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newDecCommand.fullCommandInt;
 	IC++;
@@ -3191,7 +3191,7 @@ void decMatrixCmd(parms data)
 	newDecCommand.fullCommandInt = 0;
 	newDecCommand.cBitField.encodingType = Absolute;
 	newDecCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newDecCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newDecCommand.cBitField.opcode = opcodesArray[8].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newDecCommand.fullCommandInt;
 	IC++;
@@ -3249,7 +3249,7 @@ void jmpSymbolCmd(parms data)
 	newJmpCommand.fullCommandInt = 0;
 	newJmpCommand.cBitField.encodingType = Absolute;
 	newJmpCommand.cBitField.destinationOperandAddressing = Direct;
-	newJmpCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newJmpCommand.cBitField.opcode = opcodesArray[9].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newJmpCommand.fullCommandInt;
 	IC++;
@@ -3278,7 +3278,7 @@ void jmpMatrixCmd(parms data)
 	newJmpCommand.fullCommandInt = 0;
 	newJmpCommand.cBitField.encodingType = Absolute;
 	newJmpCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newJmpCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newJmpCommand.cBitField.opcode = opcodesArray[9].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newJmpCommand.fullCommandInt;
 	IC++;
@@ -3336,7 +3336,7 @@ void bneSymbolCmd(parms data)
 	newBneCommand.fullCommandInt = 0;
 	newBneCommand.cBitField.encodingType = Absolute;
 	newBneCommand.cBitField.destinationOperandAddressing = Direct;
-	newBneCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newBneCommand.cBitField.opcode = opcodesArray[10].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newBneCommand.fullCommandInt;
 	IC++;
@@ -3365,7 +3365,7 @@ void bneMatrixCmd(parms data)
 	newBneCommand.fullCommandInt = 0;
 	newBneCommand.cBitField.encodingType = Absolute;
 	newBneCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newBneCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newBneCommand.cBitField.opcode = opcodesArray[10].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newBneCommand.fullCommandInt;
 	IC++;
@@ -3423,7 +3423,7 @@ void redSymbolCmd(parms data)
 	newRedCommand.fullCommandInt = 0;
 	newRedCommand.cBitField.encodingType = Absolute;
 	newRedCommand.cBitField.destinationOperandAddressing = Direct;
-	newRedCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newRedCommand.cBitField.opcode = opcodesArray[11].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newRedCommand.fullCommandInt;
 	IC++;
@@ -3452,7 +3452,7 @@ void redMatrixCmd(parms data)
 	newRedCommand.fullCommandInt = 0;
 	newRedCommand.cBitField.encodingType = Absolute;
 	newRedCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newRedCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newRedCommand.cBitField.opcode = opcodesArray[11].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newRedCommand.fullCommandInt;
 	IC++;
@@ -3532,7 +3532,7 @@ void prnSymbolCmd(parms data)
 	newPrnCommand.fullCommandInt = 0;
 	newPrnCommand.cBitField.encodingType = Absolute;
 	newPrnCommand.cBitField.destinationOperandAddressing = Direct;
-	newPrnCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newPrnCommand.cBitField.opcode = opcodesArray[12].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newPrnCommand.fullCommandInt;
 	IC++;
@@ -3561,7 +3561,7 @@ void prnMatrixCmd(parms data)
 	newPrnCommand.fullCommandInt = 0;
 	newPrnCommand.cBitField.encodingType = Absolute;
 	newPrnCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newPrnCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newPrnCommand.cBitField.opcode = opcodesArray[12].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newPrnCommand.fullCommandInt;
 	IC++;
@@ -3619,7 +3619,7 @@ void jsrSymbolCmd(parms data)
 	newJsrCommand.fullCommandInt = 0;
 	newJsrCommand.cBitField.encodingType = Absolute;
 	newJsrCommand.cBitField.destinationOperandAddressing = Direct;
-	newJsrCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newJsrCommand.cBitField.opcode = opcodesArray[13].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newJsrCommand.fullCommandInt;
 	IC++;
@@ -3648,7 +3648,7 @@ void jsrMatrixCmd(parms data)
 	newJsrCommand.fullCommandInt = 0;
 	newJsrCommand.cBitField.encodingType = Absolute;
 	newJsrCommand.cBitField.destinationOperandAddressing = MatrixAccess;
-	newJsrCommand.cBitField.opcode = opcodesArray[7].opcodeNum;
+	newJsrCommand.cBitField.opcode = opcodesArray[13].opcodeNum;
 
 	cpuFullMemory[IC].fullReg = newJsrCommand.fullCommandInt;
 	IC++;
@@ -3915,7 +3915,7 @@ int analizeLineSecTransition(char *line , int lineNum)
 			entrySymbol = findSymbolByLabel(word);
 			addToEntryFile(entrySymbol);
 		}
-		IC++;
+		/*IC++;*/
 		return 1;
 	}
 	else
@@ -3993,6 +3993,7 @@ int analizeLineSecTransition(char *line , int lineNum)
 						funcParametersType = ONE_VALUE;
 					}
 				}
+				free(number);
 			}
 			else
 			{
@@ -4174,6 +4175,7 @@ int analizeLineSecTransition(char *line , int lineNum)
 					number[count] = '\0';
 					funcParms.destinationNum = atoi(number);
 					funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Immediate);
+					free(number);
 				}
 				else
 				{
