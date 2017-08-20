@@ -35,13 +35,13 @@ char *instructions[numInstructions] = {"data", "string", "mat", "entry", "extern
 
 char *registerNames[numRegisters] = {"r0", "r1", "r2", "r3", "r4", "r5", "r6", "r7"};
 
-pSymbol SymbolTable = NULL;
-pSymbol SymbolTableLast = NULL;
-Errorptr errorList = NULL;
-Errorptr errorListLast = NULL;
+pSymbol SymbolTable;
+pSymbol SymbolTableLast;
+Errorptr errorList;
+Errorptr errorListLast;
 memoryWord dataArray[SIZEARRAY];	
-int DC = 0; 
-int IC = 100;
+int DC; 
+int IC;
 
 int isInteger(char *str);
 int isParam(char *str);
@@ -190,7 +190,7 @@ void matFunc(char *str,int lineNumber){
 	char *token, *tokenInner;
 	char size1[MAXWORD];
 	char size2[MAXWORD];
-	int i,row,col,data,checker,matSize; 
+	int i,row,col,data,checker,matSize;
 	token = strtok (str," ");
     token = strtok (NULL," "); 
 	checker = sscanf(token,"[%99[^]]]" "[%99[^]]]",size1,size2);
@@ -231,8 +231,6 @@ void matFunc(char *str,int lineNumber){
 			}
 		}
 	}
-	free(token);
-	free(tokenInner);
 }
 		
 void stringFunc(char *str,int lineNumber){		
@@ -255,10 +253,10 @@ void stringFunc(char *str,int lineNumber){
 			for (i=0;i<strlen(param);i++){
 				data = param[i];
 				addToDataArray(data);			
-			}		
+			}
+			addToDataArray(0);			
 		}   
 	}
-	free(token);
 }		
 	
 void dataFunc(char *str,int lineNumber){		
@@ -274,8 +272,7 @@ void dataFunc(char *str,int lineNumber){
 			addError(WRONG_PARAMETER_VALUE,lineNumber);        
 			return;
 		}
-	}
-	free(token);	
+	}	
 }
 /*function makes a special label validation, different from the one in isLabel, due to requirements*/
 void externFunc(char *str,int lineNumber){
@@ -316,9 +313,7 @@ void externFunc(char *str,int lineNumber){
 			}
 			addToSymbolList(&SymbolTable, &SymbolTableLast, exLabel, 0, 0, 1, 0);
 		}
-	}
-	free(token);
-	free(exLabel);	
+	}	
 }
 
 char *isLabel(char *word, int lineNumber){
@@ -491,7 +486,6 @@ int oneOperandFunc(char *line,int opCode, int lineNum){
 			result = calcOneOperand123(op1,lineNum);
 		}
 	}
-	free(token);
 	return result;
 }
 
@@ -538,7 +532,6 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	if ((isRegister(op1)) && (isRegister(op2)) && (opCode !=6)){
 		result += 1;	
 	}
-	free(token);
 	return result;
 }
 
@@ -552,7 +545,6 @@ void noOperand (char *line, int lineNum){
 		addError(TOO_MANY_OPERANDS,lineNum);			
 		return;
 	}
-	free(token);
 	return;
 }
 
@@ -629,17 +621,23 @@ void analizeLine(char *line, int lineNum){
 		addError(WRONG_COMMAND,lineNum);						
 		return;
 	}
-	free(label);
 }
 
 /*A function to move over file and analize each line in the file*/
 void moveOverFileOne(FILE* currentFile)
 {
-	int lineNum = 1;
-	char* startLine;
-	int fileChar; 
-	int ind = 0;
+	
 
+	char* startLine;
+	int fileChar;
+	int lineNum = 1; 
+	int ind = 0;
+	SymbolTable = NULL;
+	SymbolTableLast = NULL;
+	errorList = NULL;
+	errorListLast = NULL;
+	DC = 0; 
+	IC = 100;
 	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
 	ind = 0;
 	while((fileChar = fgetc(currentFile)))

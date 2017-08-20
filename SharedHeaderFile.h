@@ -273,10 +273,13 @@ extern Errorptr errorListLast;
 void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine);
 const char *getError(errorType e);
 void printErrorList(Errorptr head);
+void freeErrorList(Errorptr head);
 char *isOpCode(char *word);
+char *strdup(char *s);
 void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat);
 pSymbol findSymbolByLabel(char *label);
 void printSymbolList(pSymbol head);
+void freeSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);
 unsigned int getNumOfOpCode(char *word);
 

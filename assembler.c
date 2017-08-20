@@ -6,31 +6,11 @@
 #include "FirstTransitionHeader.h"
 #include "SecondTransitionHeader.h"
 
-opcodeStruct opcodesArray[16]=
-{
-	{0 , "mov" , 2},
-	{1 , "cmp" , 2},
-	{2 , "add" , 2},
-	{3 , "sub" , 2},
-	{4 , "not" , 1},
-	{5 , "clr" , 1},
-	{6 , "lea" , 2},
-	{7 , "inc" , 1},
-	{8 , "dec" , 1},
-	{9 , "jmp" , 1},
-	{10 , "bne" , 1},
-	{11 , "red" , 1},
-	{12 , "prn" , 1},
-	{13 , "jsr" , 1},
-	{14 , "rts" , 0},
-	{15 , "stop" , 0},
-};
 
-int DC = 0; 
-int IC = 100;
 
 int main(int argc, char *argv[])
 {
+	int i;	
 	FILE *fd;	
 	char *suffix;
 	char *fileName;
@@ -55,6 +35,9 @@ int main(int argc, char *argv[])
 		validateFileName(suffix);		
 		fd = handleFileName(fileName);
 		moveOverFileOne(fd);
+		for (i=0;i<DC;i++){
+			printf("%d\n", dataArray[i].mw.word);
+		}
 		printErrorList(errorList);
 		if(!(errorList))
 		{
@@ -63,8 +46,12 @@ int main(int argc, char *argv[])
 			moveOverFileTwo(fd , suffix);
 			printSymbolList(SymbolTable);
 			printErrorList(errorList);
+			if (errorList) freeErrorList(errorList);
+			if (SymbolTable) freeSymbolList(SymbolTable);
 		}
+
 		argumentIndex++;
+
 	}
 	
 	return 0;	

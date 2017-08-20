@@ -84,7 +84,6 @@ const char *getError(errorType e)
 		case TOO_FEW_OPERANDS : return "TOO_FEW_OPERANDS";
 		case NO_LABEL_FOR_EXTERN_INSTRUCTION : return "NO_LABEL_FOR_EXTERN_INSTRUCTION";
 		case ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION : return "ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION";
-		case WRONG_COMMAND : return "WRONG_COMMAND";	
 		default: return NULL;	
 	}
 }
@@ -103,6 +102,15 @@ void printErrorList(Errorptr head)
 	return;	
 }
 
+void freeErrorList(Errorptr head){
+	Errorptr p;
+	while (head){
+		p= head;
+		head = p->next;
+		free(p);	
+	}
+}
+
 char *isOpCode(char *word)
 {
 	int i;
@@ -118,7 +126,14 @@ char *isOpCode(char *word)
 	}
 	return NULL;
 }
-
+char *strdup(char *s){
+	char *p;
+	p = (char *) malloc(strlen(s)+1);
+	if (p != NULL){
+		strcpy(p, s);	
+	}
+	return p;
+}
 void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat)  
 {
 	pSymbol temp,p;
@@ -129,8 +144,7 @@ void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigne
 		exit(0);
 	}
 	/*new item is put in a temporary node before entering the list*/
-	temp->label = (char*)malloc(strlen(str)*sizeof(char));
-	strcpy(temp->label , str);
+	temp->label = strdup(str);
 	temp->address = counter;
 	temp->action = isAct;
 	temp->external = isExt;
@@ -179,6 +193,15 @@ void printSymbolList(pSymbol head)
 	return;	
 }
 
+void freeSymbolList(pSymbol head){
+	pSymbol p;
+	while (head){
+		p=head;
+		head = p->next;
+		free(p);	
+	}
+}
+
 unsigned int getNumOfParamsOfOpCode(char *word)
 {
 	int i;
@@ -206,4 +229,6 @@ unsigned int getNumOfOpCode(char *word)
 	}
 	return (unsigned int)NULL;
 }
+
+
 

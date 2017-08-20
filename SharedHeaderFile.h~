@@ -12,6 +12,7 @@
 #define WORDLENGTH 10
 #define MAXLABEL 30
 #define MAXLINE	80
+#define MAXWORD 30
 #define SIZEARRAY 100
 
 #define ENTRY ".ENTRY"
@@ -273,9 +274,11 @@ void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine);
 const char *getError(errorType e);
 void printErrorList(Errorptr head);
 char *isOpCode(char *word);
+char *strdup(char *s);
 void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat);
 pSymbol findSymbolByLabel(char *label);
 void printSymbolList(pSymbol head);
+void freeSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);
 unsigned int getNumOfOpCode(char *word);
 
