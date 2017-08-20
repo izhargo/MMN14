@@ -237,7 +237,7 @@ typedef struct symbol{ /*a symbol in a linked list representing a symbol 							
 
 	unsigned int external:1;
 
-
+	unsigned int matrix:1;
 
 	pSymbol	next;
 
@@ -251,7 +251,7 @@ extern pSymbol SymbolTable;
 
 extern pSymbol SymbolTableLast;
 
-typedef enum errors {NONE,WRONG_INPUT_IN_LABEL,SYMBOL_ALREADY_IN_THE_TABLE,LABEL_INPUT_TOO_LONG,WRONG_INSTRUCTION_NAME, WRONG_PARAMETER_VALUE,WRONG_MATRIX_SIZE,WRONG_MATRIX_PARAMETER_VALUE,NO_LABEL_FOR_MATRIX, WRONG_OPERAND,TOO_MANY_OPERANDS,NO_LABEL_FOR_EXTERN_INSTRUCTION,ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,LABEL_INPUT_NOT_EXSIST,WRONG_INPUT_VALUE} errorType;
+typedef enum errors {NONE,WRONG_COMMAND,WRONG_INPUT_IN_LABEL,SYMBOL_ALREADY_IN_THE_TABLE,LABEL_INPUT_TOO_LONG,WRONG_INSTRUCTION_NAME, WRONG_PARAMETER_VALUE,WRONG_MATRIX_SIZE,WRONG_MATRIX_PARAMETER_VALUE,NO_LABEL_FOR_MATRIX, WRONG_OPERAND_INPUT,TOO_MANY_OPERANDS,NO_LABEL_FOR_EXTERN_INSTRUCTION,ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,LABEL_INPUT_NOT_EXSIST,WRONG_INPUT_VALUE} errorType;
 
 typedef struct errorNode* Errorptr;
 
@@ -273,7 +273,7 @@ void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine);
 const char *getError(errorType e);
 void printErrorList(Errorptr head);
 char *isOpCode(char *word);
-void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt);
+void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat);
 pSymbol findSymbolByLabel(char *label);
 void printSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);

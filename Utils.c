@@ -77,10 +77,11 @@ const char *getError(errorType e)
 		case WRONG_MATRIX_SIZE : return "WRONG_MATRIX_SIZE";
 		case NO_LABEL_FOR_MATRIX : return "NO_LABEL_FOR_MATRIX";
 		case WRONG_MATRIX_PARAMETER_VALUE : return "WRONG_MATRIX_PARAMETER_VALUE";				
-		case WRONG_OPERAND : return "WRONG_OPERAND";
+		case WRONG_OPERAND_INPUT : return "WRONG_OPERAND_INPUT";
 		case TOO_MANY_OPERANDS : return "TOO_MANY_OPERANDS";
 		case NO_LABEL_FOR_EXTERN_INSTRUCTION : return "NO_LABEL_FOR_EXTERN_INSTRUCTION";
 		case ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION : return "ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION";
+		case WRONG_COMMAND : return "WRONG_COMMAND";	
 		default: return NULL;	
 	}
 }
@@ -117,7 +118,7 @@ char *isOpCode(char *word)
 	return NULL;
 }
 
-void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt)  
+void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat)  
 {
 	pSymbol temp,p;
 	temp = (pSymbol) malloc(sizeof(symbol));/* allocate memory for a new Error in list*/
@@ -131,8 +132,8 @@ void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigne
 	temp->address = counter;
 	temp->action = isAct;
 	temp->external = isExt;
+	temp->matrix = isMat;
 	temp->next = NULL;
-	printf("Label: %s, Address: %d, External: %d, Action: %d\n",temp->label, temp->address, temp->external, temp->action);
 	if (!(*head))
 	{	
 		/*insert to an empty list*/
@@ -169,7 +170,7 @@ void printSymbolList(pSymbol head)
 	p = head;
 	while(p != NULL)
 	{
-		printf("Label: %s, Address: %d, External: %d, Action: %d\n",p->label, p->address, p->external, p->action);				
+		printf("Label: %s, Address: %d, External: %d, Action: %d\n, Matrix: %d\n",p->label, p->address, p->external, p->action, p->matrix);				
 		p=p->next;
 	}
 	printf("\n");

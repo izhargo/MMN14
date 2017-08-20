@@ -4,6 +4,9 @@
 #include <ctype.h>
 #include "SharedHeaderFile.h"
 #include "FirstTransitionHeader.h"
+#define MAXLINE 80
+#define MAXLABEL 30
+#define MAXWORD 30
 
 binWord bin;
 
@@ -223,7 +226,6 @@ void stringFunc(char *str,int lineNumber){
 			return;
 		}
 		else{
-			printf("%d\n",param[strlen(param)-1]);
 			for (i=0;i<strlen(param);i++){
 				data = param[i];
 				addToDataArray(data);			
@@ -284,7 +286,7 @@ void externFunc(char *str,int lineNumber){
 				addError(ERROR_IN_LABEL_FOR_EXTERN_INSTRUCTION,lineNumber);
 				return;
 			}
-			addToSymbolList(&SymbolTable, &SymbolTableLast, exLabel, 0, 0, 1);
+			addToSymbolList(&SymbolTable, &SymbolTableLast, exLabel, 0, 0, 1, 0);
 		}
 	}	
 }
@@ -323,12 +325,180 @@ char *isLabel(char *word, int lineNumber){
 	}
 }
 
+int calcOneOperand0123(char *str, int lineNum){	
+	char *token;
+	char reg1[MAXWORD], reg2[MAXWORD];	
+	int result = 0;
+	if (str[0]=='#'){/*immediate address (0)*/
+		if (isInteger(str+1)){
+			result++;
+		}
+		else{
+			addError(WRONG_OPERAND_INPUT,lineNum);			
+			return 0;
+		}
+	}
+	else if (isRegister(str)){ /*register address (3)*/
+		result++;
+	}
+	else if (strchr(str,'[') != NULL) { /*matrix address (2)*/			
+		token = strtok(str,"[");
+		token = strtok(NULL,"]");
+		strcpy(reg1,token);
+		token = strtok(NULL,"]");
+		strcpy(reg2,token);
+		if ((isRegister(reg1)) && (isRegister(reg2+1))){
+			result+=2;
+		}
+		else{
+			addError(WRONG_OPERAND_INPUT,lineNum);			
+			return 0;		
+		}	
+	}
+	else{ /*direct address, cannot validate in first transition*/
+		result++;
+	}
+	return result;
+}
+
+int calcOneOperand123(char *str, int lineNum){	
+	char *token;	
+	char reg1[MAXWORD], reg2[MAXWORD];	
+	int result = 0;	
+	if (str[0]=='#'){/*immediate address (0) not allowed*/
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
+	}
+	else if (isRegister(str)){ /*register address (3)*/
+		result++;
+	}
+	else if (strchr(str,'[') != NULL) { /*matrix address (2)*/			
+		token = strtok(str,"[");
+		token = strtok(NULL,"]");
+		strcpy(reg1,token);
+		token = strtok(NULL,"]");
+		strcpy(reg2,token);
+		if ((isRegister(reg1)) && (isRegister(reg2+1))){
+			result+=2;
+		}
+		else{
+			addError(WRONG_OPERAND_INPUT,lineNum);			
+			return 0;		
+		}	
+	}
+	else{/*direct address, cannot validate in first transition*/
+		result++;
+	}
+	
+	return result;
+}
+
+int calcOneOperand12(char *str, int lineNum){
+	char *token;	
+	char reg1[MAXWORD], reg2[MAXWORD];	
+	int result = 0;	
+	if (str[0]=='#'){/*immediate address (0), not allowed*/
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;	
+	}
+	else if (isRegister(str)){ /*register address (3), not allowed*/
+		addError(WRONG_OPERAND_INPUT,lineNum);			
+		return 0;
+	}
+	else if (strchr(str,'[') != NULL) { /*matrix address (2)*/			
+		token = strtok(str,"[");
+		token = strtok(NULL,"]");
+		strcpy(reg1,token);
+		token = strtok(NULL,"]");
+		strcpy(reg2,token);
+		if ((isRegister(reg1)) && (isRegister(reg2+1))){
+			result+=2;
+		}
+		else{
+			addError(WRONG_OPERAND_INPUT,lineNum);			
+			return 0;		
+		}	
+	}
+	else{/*direct address, cannot validate in first transition*/
+		result++;
+	}
+	return result;
+}
+
+int oneOperandFunc(char *line,int opCode, int lineNum){
+	char *token;	
+	char op1[MAXWORD], rest[MAXWORD];
+	int checker;
+	int result = 0;
+	token = strtok(line," ");
+	token = strtok(NULL," ");
+	checker = sscanf(token,"%s" "%s" ,op1,rest);
+	if (checker>1){
+		addError(TOO_MANY_OPERANDS,lineNum);			
+		return 0;	
+	}
+	if (opCode == 12){
+		result = calcOneOperand0123(op1,lineNum);
+	}
+	else{
+		result = calcOneOperand123(op1,lineNum);
+	}
+	return result;
+}
+
+int twoOperandFunc(char *line ,int opCode, int lineNum){
+	char *token;		
+	char op1[MAXWORD], op2[MAXWORD];
+	int opVal1,opVal2;	
+	int result = 0;  
+	token = strtok(line," ");
+	token = strtok(NULL,",");
+	sscanf(token, "%s", op1);
+	token = strtok(NULL,",");
+	sscanf(token, "%s", op2); 
+	if ((token = strtok (NULL,",")) == NULL){
+		if (opCode == 1){
+			opVal1 = calcOneOperand0123(op1,lineNum);
+			opVal2 = calcOneOperand0123(op2,lineNum);		
+		}
+		else if ((opCode == 0) || (opCode == 2) || (opCode == 3)){			
+			opVal1 = calcOneOperand0123(op1,lineNum);
+			opVal2 = calcOneOperand123(op2,lineNum);
+		}
+		else if (opCode == 6){
+			opVal1 = calcOneOperand12(op1,lineNum);
+			opVal2 = calcOneOperand123(op2,lineNum);		
+		}
+		result = opVal1 + opVal2;
+	}
+	else{
+		addError(TOO_MANY_OPERANDS,lineNum);			
+		return 0;
+	}	
+	/* a special check for two registers*/
+	if ((isRegister(op1)) && (isRegister(op2)) && (opCode !=6)){
+		result += 1;	
+	}
+	return result;
+}
+
+void noOperand (char *line, int lineNum){
+	char *token;	
+	token = strtok(line," ");
+	if ((token = strtok(NULL," ")) == NULL){
+		return;	
+	}
+    else{ /*we have a kind of an operand - and we shouldn't*/
+		addError(TOO_MANY_OPERANDS,lineNum);			
+		return;
+	}
+	return;
+}
+
 void analizeLine(char *line, int lineNum){
-	char *label;	
-	char *word1;
-    char *checker;
-    char *restOfLine;
+	char *label,*word1,*checker,*restOfLine;	
 	char token[MAXWORD];
+	int opCode, result;
     checker = strchr(line,':');
 	if (checker != NULL){ /* ":" appears in line*/           
 		word1 = strtok(line, ":");
@@ -350,16 +520,16 @@ void analizeLine(char *line, int lineNum){
 			return;
 		}
 		else if (strcmp(instructions[0],isInstruction(token+1)) == 0){		
-			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
+			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0, 0);				
 			dataFunc(restOfLine,lineNum);
 		}
 		else if (strcmp(instructions[1],isInstruction(token+1)) == 0){		
-			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);				
+			if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0, 0);				
 			stringFunc(restOfLine,lineNum);
 		}
 		else if (strcmp(instructions[2],isInstruction(token+1)) == 0){		
 			if (flagLabel) {
-			addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0);
+			addToSymbolList(&SymbolTable, &SymbolTableLast, label, DC, 0, 0, 1);
 			}
 			else{
 				addError(NO_LABEL_FOR_MATRIX,lineNum);			
@@ -374,24 +544,36 @@ void analizeLine(char *line, int lineNum){
 			externFunc(restOfLine,lineNum);
 		}			
 	}
+	else if (isOpCode(token) != NULL){
+		if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, IC, 1, 0, 0);	
+		opCode = getNumOfOpCode(token);
+		if (((opCode>=0) && (opCode<=3)) || (opCode==6)) {
+			result = twoOperandFunc(restOfLine,opCode,lineNum);
+			IC+=result+1;
+		}
+		else if (((opCode>=7) && (opCode<=13)) || (opCode==4) || (opCode==5)){ 
+			result = oneOperandFunc(restOfLine,opCode,lineNum);
+			IC+=result+1;
+		}
+		else{
+			noOperand(restOfLine,lineNum);			
+			IC++;
+		}
+	}
+	else{
+		addError(WRONG_COMMAND,lineNum);						
+		return;
+	}
+
 }
-
-
+/*
 int main(){
 	int i;
-	char line1[80] = {"MAIN:    .data 2,1   "};
-	char line2[80] = {"m34:    .mat [2][2]  1,2,3,4,  "};
-
 	
-	char line3[80] = {"m35:    .mat [2][2]"};	
-	/*
-	char line4[80] = {"MAIN    .mat [2][2]"}; 
-
-	   
-	*/
-	analizeLine(line1, 1);	
-	analizeLine(line2, 2);
-	analizeLine(line3, 3);
+	char line1[80] = {"END: stop "};
+	char line2[80] = {"ml: .mat [2][2]"};
+	analizeLine(line1, 1);
+	analizeLine(line2, 2);	
 	for (i=0;i<DC;i++){
 		printf("%d , %s\n",dataArray[i].mw.word,convertToWeirdFour(dataArray[i].mw.word));
 	}
@@ -400,4 +582,5 @@ int main(){
 	
 	return 0;
 }
+*/
 
