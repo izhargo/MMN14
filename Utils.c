@@ -129,7 +129,8 @@ void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigne
 		exit(0);
 	}
 	/*new item is put in a temporary node before entering the list*/
-	temp->label = str;
+	temp->label = (char*)malloc(strlen(str)*sizeof(char));
+	strcpy(temp->label , str);
 	temp->address = counter;
 	temp->action = isAct;
 	temp->external = isExt;
