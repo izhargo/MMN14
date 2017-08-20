@@ -598,7 +598,6 @@ void analizeLine(char *line, int lineNum){
 
 }
 
-<<<<<<< Updated upstream
 /*A function to move over file and analize each line in the file*/
 void moveOverFileOne(FILE* currentFile)
 {
@@ -636,9 +635,7 @@ void moveOverFileOne(FILE* currentFile)
 	free(startLine);
 }
 
-/*
-=======
->>>>>>> Stashed changes
+
 int main(){
 	int i;
 	

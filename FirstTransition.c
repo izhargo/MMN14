@@ -635,21 +635,3 @@ void moveOverFileOne(FILE* currentFile)
 	free(startLine);
 }
 
-
-int main(){
-	int i;
-	
-	char line1[80] = {"SR: red M2[r0][r7]"};
-	char line2[80] = {"ml: rts"};
-	analizeLine(line1, 1);
-	analizeLine(line2, 2);	
-	for (i=0;i<DC;i++){
-		printf("%d , %s\n",dataArray[i].mw.word,convertToWeirdFour(dataArray[i].mw.word));
-	}
-	printSymbolList(SymbolTable);
-	printErrorList(errorList);	
-	
-	return 0;
-}
-
-
