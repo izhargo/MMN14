@@ -32,6 +32,7 @@ char* convertToWeirdFour(short wordShort)
 	return weirdFourWord;
 }
 
+/*A function to add an error to last place in the error list*/
 void addToErrorList(Errorptr *head, Errorptr *last, errorType err, int numLine)
 {
 	Errorptr temp,p;
