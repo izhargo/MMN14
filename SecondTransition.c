@@ -3704,23 +3704,25 @@ void StopCmd(parms data)
 /*A function to add a symbol to the current external file*/
 void addToExternFile(pSymbol externSymbol)
 {
-	
+	char* newLine = "\n";
 	char* wierdFourNum;
-	fwrite(externSymbol->label,sizeof(char),sizeof(externSymbol->label)/sizeof(char),currentExternFile);
+	fwrite(externSymbol->label,sizeof(char),strlen(externSymbol->label),currentExternFile);
 	fwrite(tabArray,sizeof(char),2,currentExternFile);
 	wierdFourNum = convertToWeirdFour(IC+1);
-	fwrite(wierdFourNum,sizeof(char),sizeof(wierdFourNum)/sizeof(char),currentExternFile);
+	fwrite(wierdFourNum,sizeof(char),strlen(wierdFourNum),currentExternFile);
+	fwrite(newLine,sizeof(char),strlen(newLine),currentExternFile);
 }
 
 /*A function to add a symbol to the current entry file*/
 void addToEntryFile(pSymbol entrySymbol)
 {
-	
+	char* newLine = "\n";
 	char* wierdFourNum;
-	fwrite(entrySymbol->label,sizeof(char),sizeof(entrySymbol->label)/sizeof(char),currentEntryFile);
+	fwrite(entrySymbol->label,sizeof(char),strlen(entrySymbol->label),currentEntryFile);
 	fwrite(tabArray,sizeof(char),2,currentEntryFile);
 	wierdFourNum = convertToWeirdFour(IC+1);
-	fwrite(wierdFourNum,sizeof(char),sizeof(wierdFourNum)/sizeof(char),currentEntryFile);
+	fwrite(wierdFourNum,sizeof(char),strlen(wierdFourNum),currentEntryFile);
+	fwrite(newLine,sizeof(char),strlen(newLine),currentEntryFile);
 }
 
 /*A function to move over the lines in a file and create the extern, entry and object file*/
@@ -3730,7 +3732,7 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	char* currentExternFileName;
 	char* currentObjectFileName;
 	char* currentEntryFileName;
-	char* startLine;
+	char startLine[MAXLINE];
 	int fileChar; 
 	
 	int ind = 0;
@@ -3772,7 +3774,6 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	currentObjectFile = fopen(currentObjectFileName , "w");
 	readdressSymbolTable();
 	IC = 100;
-	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
 	ind = 0;
 	lineNum = 1;
 	while((fileChar = fgetc(currentFile)))
@@ -3894,6 +3895,27 @@ int analizeLineSecTransition(char *line , int lineNum)
 		|| (strncmp(line,DATA,sizeof(DATA)/sizeof(char) - 1) == 0) || (strncmp(line,STRING,sizeof(STRING)/sizeof(char) - 1) == 0)
 		|| (strncmp(line,MAT,sizeof(MAT)/sizeof(char) - 1) == 0))
 	{
+		if((strncmp(line,ENTRY,sizeof(ENTRY)/sizeof(char) - 1) == 0)) 
+		{
+			pSymbol entrySymbol;
+			char word[MAXLABEL+1];
+			while((*line) != ' '  && (*line) != '\t')
+				line++;
+			/*Skip white spaces*/
+			while((*line) == ' ' || (*line) == '\t')
+				line++;
+			count = 0;
+			while((*line) != ' ' && (*line) != '\t' && (*line) != '[' && strlen(line) > 0)
+			{
+				word[count] = (*line);
+				line++;
+				count++;
+			}
+			word[count] = '\0';
+			entrySymbol = findSymbolByLabel(word);
+			addToEntryFile(entrySymbol);
+		}
+		IC++;
 		return 1;
 	}
 	else
@@ -3948,9 +3970,8 @@ int analizeLineSecTransition(char *line , int lineNum)
 			if((*line) == '#')
 			{
 				/*get a number parameter*/
-				char* number;
+				char number[MAXNUMBERSIZE];
 				line++;
-				number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
 				count = 0;
 				while((*line) != ' ' && (*line) != '\t' && (*line) != ',')
 				{
@@ -3972,7 +3993,6 @@ int analizeLineSecTransition(char *line , int lineNum)
 						funcParametersType = ONE_VALUE;
 					}
 				}
-				free(number);
 			}
 			else
 			{
@@ -4020,7 +4040,7 @@ int analizeLineSecTransition(char *line , int lineNum)
 				}
 				if(funcParametersType != ONE_REGISTER && firstParamAddressingMethod != DirectRegister)
 				{
-					while((*line) != ' ' && (*line) != '\t' && (*line) != '[' && strlen(line) > 0)
+					while((*line) != ' ' && (*line) != '\t'  && (*line) != ',' && (*line) != '[' && strlen(line) > 0)
 					{
 						word[count] = (*line);
 						line++;
@@ -4076,7 +4096,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 						{
 							funcParms.matrixSource = findSymbolByLabel(word);
 							if(funcParms.matrixSource == NULL)
+							{
 								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								return 0;
+							}
 							funcParms.eMatrixRegRowSource = registerSource;
 							funcParms.eMatrixRegColumnSource = registerDestination;
 							firstParamAddressingMethod = MatrixAccess;
@@ -4087,7 +4110,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 							{
 								funcParms.matrixDestination = findSymbolByLabel(word);
 								if(funcParms.matrixDestination == NULL)
+								{
 									addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+									return 0;
+								}
 								funcParms.eMatrixRegRowDestination = registerSource;
 								funcParms.eMatrixRegColumnDestination = registerDestination;
 								funcParametersType = ONE_MATRIX;
@@ -4100,7 +4126,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 						{
 							funcParms.symbolSource = findSymbolByLabel(word);
 							if(funcParms.symbolSource == NULL)
+							{
 								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								return 0;
+							}
 							firstParamAddressingMethod = Direct;
 						}
 						else
@@ -4109,7 +4138,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 							{
 								funcParms.symbolDestination = findSymbolByLabel(word);
 								if(funcParms.symbolDestination == NULL)
+								{
 									addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+									return 0;
+								}
 								funcParametersType = ONE_SYMBOL;
 							}
 						}
@@ -4130,10 +4162,9 @@ int analizeLineSecTransition(char *line , int lineNum)
 				if((*line) == '#')
 				{
 					/*Get a number parameter from line as destination parameter*/
-					char* number;
+					char number[MAXNUMBERSIZE];
 					line++;
 					count = 0;
-					number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
 					while((*line) != ' ' && (*line) != '\t')
 					{
 						number[count] = (*line);
@@ -4143,7 +4174,6 @@ int analizeLineSecTransition(char *line , int lineNum)
 					number[count] = '\0';
 					funcParms.destinationNum = atoi(number);
 					funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Immediate);
-					free(number);
 				}
 				else
 				{
@@ -4196,9 +4226,11 @@ int analizeLineSecTransition(char *line , int lineNum)
 						{
 							eCpuRegisters registerSource;
 							eCpuRegisters registerDestination;
+							line++;
 							while((*line) == ' ' || (*line) == '\t')
 								line++;
-							line++;
+							if(toupper((*line)) == 'R')
+								line++;
 							switch((*line) - '0')
 							{
 								case 0: registerSource = r0; break;
@@ -4213,6 +4245,12 @@ int analizeLineSecTransition(char *line , int lineNum)
 							while((*line) == ' ' || (*line) == '\t')
 								line++;
 							line++;
+							if((*line) == ']')
+								line++;
+							if((*line) == '[')
+								line++;
+							if(toupper((*line)) == 'R')
+								line++;
 							switch((*line) - '0')
 							{
 								case 0: registerDestination = r0; break;
@@ -4226,7 +4264,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 							}
 							funcParms.matrixDestination = findSymbolByLabel(word);
 							if(funcParms.matrixDestination == NULL)
+							{
 								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								return 0;
+							}
 							funcParms.eMatrixRegRowDestination = registerSource;
 							funcParms.eMatrixRegColumnDestination = registerDestination;
 							funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , MatrixAccess);
@@ -4235,7 +4276,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 						{
 							funcParms.symbolDestination = findSymbolByLabel(word);
 							if(funcParms.symbolDestination == NULL)
+							{
 								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								return 0;
+							}
 							funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Direct);
 						}
 					}
