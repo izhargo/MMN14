@@ -1,7 +1,7 @@
 #include "SharedHeaderFile.h"
 #include "SecondTransitionHeader.h"
 
-char* tabArray = "/t";
+char* tabArray = "\t";
 
 cmd movs[] = 
 {
@@ -3735,11 +3735,13 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	
 	int ind = 0;
 	int lineNum = 0;
+	int length = strlen(currentFileName);
 
 	currentExternFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
 	currentEntryFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
 	currentObjectFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+3)*sizeof(char)));
-	while((int)(*currentFileName) != EOF)
+	
+	while(ind < length)
 	{
 		currentExternFileName[ind] = (*currentFileName);
 		currentEntryFileName[ind] = (*currentFileName);
@@ -3760,15 +3762,16 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	currentEntryFileName[ind+3] = 't';
 	currentEntryFileName[ind+4] = '\0';
 
-	currentEntryFileName[ind] = '.';
-	currentEntryFileName[ind+1] = 'o';
-	currentEntryFileName[ind+2] = 'b';
-	currentEntryFileName[ind+3] = '\0';
+	currentObjectFileName[ind] = '.';
+	currentObjectFileName[ind+1] = 'o';
+	currentObjectFileName[ind+2] = 'b';
+	currentObjectFileName[ind+3] = '\0';
 
 	currentExternFile = fopen(currentExternFileName , "w");
 	currentEntryFile = fopen(currentEntryFileName , "w");
 	currentObjectFile = fopen(currentObjectFileName , "w");
-
+	readdressSymbolTable();
+	IC = 100;
 	startLine = (char*)(malloc(sizeof(char)*MAXLINE));
 	ind = 0;
 	lineNum = 1;
@@ -3784,10 +3787,13 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 		}
 		if (fileChar == EOF)
 		{
-			startLine[ind] = '\0';
-			analizeLineSecTransition(startLine, lineNum);
-			ind = 0;
-			lineNum++;
+			if(ind > 0)
+			{
+				startLine[ind] = '\0';
+				analizeLineSecTransition(startLine, lineNum);
+				ind = 0;
+				lineNum++;
+			}
 			break;
 		}
 		else
@@ -3795,11 +3801,6 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	}
 
 	writeObjectFile();
-
-	free(currentExternFileName);
-	free(currentEntryFileName);
-	free(currentObjectFileName);
-	free(startLine);
 }
 
 void writeObjectFile()
@@ -3808,19 +3809,19 @@ void writeObjectFile()
 	char* NumToWierdFour;
 	char* DataToWierdFour;
 	char* newLine = "\n";
-	NumToWierdFour = convertToWeirdFour(IC);
+	NumToWierdFour = convertToWeirdFour(IC - 100);
 	DataToWierdFour = convertToWeirdFour(DC);
-	
-	fwrite(tabArray,sizeof(char),sizeof(tabArray)/sizeof(char),currentObjectFile);
-	fwrite(DataToWierdFour,sizeof(char),sizeof(DataToWierdFour)/sizeof(char),currentObjectFile);
-	for(moveObjectFile = 0;  moveObjectFile < IC+DC; moveObjectFile++)
+	fwrite(NumToWierdFour,sizeof(char),strlen(NumToWierdFour),currentObjectFile);
+	fwrite(tabArray,sizeof(char),strlen(tabArray),currentObjectFile);
+	fwrite(DataToWierdFour,sizeof(char),strlen(DataToWierdFour),currentObjectFile);
+	for(moveObjectFile = 100;  moveObjectFile < IC+DC; moveObjectFile++)
 	{
-		fwrite(newLine,sizeof(char),sizeof(newLine)/sizeof(char),currentObjectFile);
+		fwrite(newLine,sizeof(char),strlen(newLine),currentObjectFile);
 		NumToWierdFour = convertToWeirdFour(moveObjectFile);
-		fwrite(NumToWierdFour,sizeof(char),sizeof(NumToWierdFour)/sizeof(char),currentObjectFile);
-		fwrite(tabArray,sizeof(char),sizeof(tabArray)/sizeof(char),currentObjectFile);
+		fwrite(NumToWierdFour,sizeof(char),strlen(NumToWierdFour),currentObjectFile);
+		fwrite(tabArray,sizeof(char),strlen(tabArray),currentObjectFile);
 		NumToWierdFour = convertToWeirdFour(cpuFullMemory[moveObjectFile].fullReg);
-		fwrite(NumToWierdFour,sizeof(char),sizeof(NumToWierdFour)/sizeof(char),currentObjectFile);
+		fwrite(NumToWierdFour,sizeof(char),strlen(NumToWierdFour),currentObjectFile);
 	}
 
 	free(NumToWierdFour);
@@ -3873,16 +3874,15 @@ eParametersType assignTwoCommandParametersType(eAddressingMethod firstParam , eA
 	return NONE_PARAMETERS;
 }
 
-
 /*A function to analize a line in the the second transition*/
 int analizeLineSecTransition(char *line , int lineNum)
 {
-	char* cmdName;
+	char cmdName[5];
 	parms funcParms;
 	cmd currentCmd;
-	eParametersType funcParametersType;
+	eParametersType funcParametersType = NONE_PARAMETERS;
 	unsigned int numOfParams;
-	eAddressingMethod firstParamAddressingMethod;
+	eAddressingMethod firstParamAddressingMethod = Immediate;
 	int count = 0;
 
 	/*Skip white spaces*/
@@ -3904,39 +3904,41 @@ int analizeLineSecTransition(char *line , int lineNum)
 			pSymbol currentLabel;
 			char* label;
 			label = (char *)malloc((strchr(line , ':') - line) * sizeof(char));
+			count = 0;
 			/*Get label name*/
-			while((*line) != ':')
+			while((*line) != ':' && (*line) != ' ' && (*line) != '\t')
 			{
-				(*label) = (*line);
+				label[count] = (*line);
 				line++;
-				label++;
+				count++;
 			}
+			label[count] = '\0';
 			/*Find if the label is an action line*/
 			currentLabel = findSymbolByLabel(label);
-			free(label);
 			if(!(currentLabel->action))
 			{
 				return 1;
-			}
-			else
-			{
-				addToEntryFile(currentLabel);
 			}
 		}
 		/*Skip white spaces*/
 		while((*line) == ' ' || (*line) == '\t')
 			line++;
+		if((*line) == ':')
+			line++;
+		/*Skip white spaces*/
+		while((*line) == ' ' || (*line) == '\t')
+			line++;
 		/*Get the command name in the line*/
-		cmdName = (char *)malloc(5 * sizeof(char));
+		if(lineNum == 3)
+			lineNum++;
 		count = 0;
 		while((*line) != ' ' && (*line) != '\t' && count<=3)
 		{
-			(*cmdName) = (*line);
+			cmdName[count] = (*line);
 			line++;
-			cmdName++;
 			count++;
 		}
-		(*cmdName) = '\0';
+		cmdName[count] = '\0';
 		numOfParams = getNumOfParamsOfOpCode(cmdName);
 		/*Skip white spaces*/
 		while((*line) == ' ' || (*line) == '\t')
@@ -3947,14 +3949,16 @@ int analizeLineSecTransition(char *line , int lineNum)
 			{
 				/*get a number parameter*/
 				char* number;
+				line++;
 				number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
-				while((*line) != ' ' && (*line) != '\t')
+				count = 0;
+				while((*line) != ' ' && (*line) != '\t' && (*line) != ',')
 				{
-					(*number) = (*line);
+					number[count] = (*line);
 					line++;
-					number++;
+					count++;
 				}
-				(*number) = '\0';
+				number[count] = '\0';
 				if(numOfParams == 2)
 				{
 					funcParms.sourceNum = atoi(number);
@@ -3972,25 +3976,22 @@ int analizeLineSecTransition(char *line , int lineNum)
 			}
 			else
 			{
-				char* word;
+				char word[MAXLABEL+1];
 				count = 0;
-				word =  (char *)malloc((MAXLABEL+1) * sizeof(char));
 				if(toupper((*line)) == 'R')
 				{
-					(*word) = 'R';
-					word++;
+					word[count] = 'R';
 					count++;
 					line++;
 					if((*line) >='0' && (*line) <= '7')
 					{
-						(*word) = (*line);
-						word++;
+						word[count] = (*line);
 						count++;
 						line++;
-						if((*line) == ' ' || (*line) == '\t' || (*line) == ',')
+						if((*line) == ' ' || (*line) == '\t' || (*line) == ',' || strlen(line) == 0)
 						{
 							eCpuRegisters currentRegister;
-							switch((*word) - '0')
+							switch((word[count - 1]) - '0')
 							{
 								case 0: currentRegister = r0; break;
 								case 1: currentRegister = r1; break;
@@ -4015,98 +4016,110 @@ int analizeLineSecTransition(char *line , int lineNum)
 								}
 							}
 						}
+					}
+				}
+				if(funcParametersType != ONE_REGISTER && firstParamAddressingMethod != DirectRegister)
+				{
+					while((*line) != ' ' && (*line) != '\t' && (*line) != '[' && strlen(line) > 0)
+					{
+						word[count] = (*line);
+						line++;
+						count++;
+					}
+					word[count] = '\0';
+					while((*line) == ' ' || (*line) == '\t')
+						line++;
+					if((*line) == '[')
+					{
+						eCpuRegisters registerSource;
+						eCpuRegisters registerDestination;
+						line++;
+						while((*line) == ' ' || (*line) == '\t')
+							line++;
+						if(toupper((*line)) == 'R')
+							line++;
+						switch((*line) - '0')
+						{
+							case 0: registerSource = r0; break;
+							case 1: registerSource = r1; break;
+							case 2: registerSource = r2; break;
+							case 3: registerSource = r3; break;
+							case 4: registerSource = r4; break;
+							case 5: registerSource = r5; break;
+							case 6: registerSource = r6; break;
+							case 7: registerSource = r7; break;
+						}
+						while((*line) == ' ' || (*line) == '\t')
+							line++;
+						line++;
+						if((*line) == ']')
+							line++;
+						if((*line) == '[')
+							line++;
+						if(toupper((*line)) == 'R')
+							line++;
+						switch((*line) - '0')
+						{
+							case 0: registerDestination = r0; break;
+							case 1: registerDestination = r1; break;
+							case 2: registerDestination = r2; break;
+							case 3: registerDestination = r3; break;
+							case 4: registerDestination = r4; break;
+							case 5: registerDestination = r5; break;
+							case 6: registerDestination = r6; break;
+							case 7: registerDestination = r7; break;
+						}
+						line++;
+						if((*line) == ']')
+							line++;
+						if(numOfParams == 2)
+						{
+							funcParms.matrixSource = findSymbolByLabel(word);
+							if(funcParms.matrixSource == NULL)
+								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+							funcParms.eMatrixRegRowSource = registerSource;
+							funcParms.eMatrixRegColumnSource = registerDestination;
+							firstParamAddressingMethod = MatrixAccess;
+						}
 						else
 						{
-							while((*line) != ' ' && (*line) != '\t' && (*line) != '[')
+							if(numOfParams == 1)
 							{
-								(*word) = (*line);
-								line++;
-								word++;
+								funcParms.matrixDestination = findSymbolByLabel(word);
+								if(funcParms.matrixDestination == NULL)
+									addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								funcParms.eMatrixRegRowDestination = registerSource;
+								funcParms.eMatrixRegColumnDestination = registerDestination;
+								funcParametersType = ONE_MATRIX;
 							}
-							word = '\0';
-							while((*line) == ' ' || (*line) == '\t')
-								line++;
-							if((*line) == '[')
+						}
+					}
+					else
+					{
+						if(numOfParams == 2)
+						{
+							funcParms.symbolSource = findSymbolByLabel(word);
+							if(funcParms.symbolSource == NULL)
+								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+							firstParamAddressingMethod = Direct;
+						}
+						else
+						{
+							if(numOfParams == 1)
 							{
-								eCpuRegisters registerSource;
-								eCpuRegisters registerDestination;
-								while((*line) == ' ' || (*line) == '\t')
-									line++;
-								line++;
-								switch((*line) - '0')
-								{
-									case 0: registerSource = r0; break;
-									case 1: registerSource = r1; break;
-									case 2: registerSource = r2; break;
-									case 3: registerSource = r3; break;
-									case 4: registerSource = r4; break;
-									case 5: registerSource = r5; break;
-									case 6: registerSource = r6; break;
-									case 7: registerSource = r7; break;
-								}
-								while((*line) == ' ' || (*line) == '\t')
-									line++;
-								line++;
-								switch((*line) - '0')
-								{
-									case 0: registerDestination = r0; break;
-									case 1: registerDestination = r1; break;
-									case 2: registerDestination = r2; break;
-									case 3: registerDestination = r3; break;
-									case 4: registerDestination = r4; break;
-									case 5: registerDestination = r5; break;
-									case 6: registerDestination = r6; break;
-									case 7: registerDestination = r7; break;
-								}
-								if(numOfParams == 2)
-								{
-										funcParms.matrixSource = findSymbolByLabel(word);
-										if(funcParms.matrixSource == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-										funcParms.eMatrixRegRowSource = registerSource;
-										funcParms.eMatrixRegColumnSource = registerDestination;
-										firstParamAddressingMethod = MatrixAccess;
-								}
-								else
-								{
-									if(numOfParams == 1)
-									{
-										funcParms.matrixDestination = findSymbolByLabel(word);
-										if(funcParms.matrixDestination == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-										funcParms.eMatrixRegRowDestination = registerSource;
-										funcParms.eMatrixRegColumnDestination = registerDestination;
-										funcParametersType = ONE_MATRIX;
-									}
-								}
+								funcParms.symbolDestination = findSymbolByLabel(word);
+								if(funcParms.symbolDestination == NULL)
+									addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+								funcParametersType = ONE_SYMBOL;
 							}
-							else
-							{
-								if(numOfParams == 2)
-								{
-									funcParms.symbolSource = findSymbolByLabel(word);
-									if(funcParms.symbolSource == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-									firstParamAddressingMethod = Direct;
-								}
-								else
-								{
-									if(numOfParams == 1)
-									{
-										funcParms.symbolDestination = findSymbolByLabel(word);
-										if(funcParms.symbolDestination == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-										funcParametersType = ONE_SYMBOL;
-									}
-								}
-							}
-							free(word);
 						}
 					}
 				}
 			}
 			if(numOfParams == 2)
 			{
+				while((*line) == ' ' || (*line) == '\t')
+					line++;
 				if((*line) == ',')
 				{
 					line++;
@@ -4118,39 +4131,38 @@ int analizeLineSecTransition(char *line , int lineNum)
 				{
 					/*Get a number parameter from line as destination parameter*/
 					char* number;
+					line++;
+					count = 0;
 					number = (char *)malloc(MAXNUMBERSIZE * sizeof(char));
 					while((*line) != ' ' && (*line) != '\t')
 					{
-						(*number) = (*line);
+						number[count] = (*line);
 						line++;
-						number++;
+						count++;
 					}
-					(*number) = '\0';
+					number[count] = '\0';
 					funcParms.destinationNum = atoi(number);
 					funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Immediate);
 					free(number);
 				}
 				else
 				{
-					char* word;
+					char word[MAXLABEL+1];
 					count = 0;
-					word =  (char *)malloc((MAXLABEL+1) * sizeof(char));
 					if(toupper((*line)) == 'R')
 					{
-						(*word) = 'R';
-						word++;
+						word[count] = 'R';
 						count++;
 						line++;
 						if((*line) >='0' && (*line) <= '7')
 						{
-							(*word) = (*line);
-							word++;
+							word[count] = (*line);
 							count++;
 							line++;
-							if( (*line) == ' ' || (*line) == '\t' || (*line) == '\n' || (int)(*line) == EOF )
+							if( (*line) == ' ' || (*line) == '\t' || (*line) == '\n' || (int)(*line) == EOF || (*line) == 0)
 							{
 								eCpuRegisters currentRegister;
-								switch((*word) - '0')
+								switch(word[count - 1] - '0')
 								{
 									case 0: currentRegister = r0; break;
 									case 1: currentRegister = r1; break;
@@ -4164,65 +4176,67 @@ int analizeLineSecTransition(char *line , int lineNum)
 								funcParms.eRegDestination = currentRegister;
 								funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , DirectRegister);
 							}
-							else
+						}
+					}
+					if(funcParametersType != VALUE_REGISTER && funcParametersType != MATRIX_REGISTER 
+						&& funcParametersType != SYMBOL_REGISTER && funcParametersType != TWO_REGISTER)
+					{
+						if(lineNum == 4)
+							lineNum = 4;
+						while((*line) != ' ' && (*line) != '\t' && (*line) != '\n' && (int)(*line) != EOF && (*line) != '[' && strlen(line)> 0)
+						{
+							word[count] = (*line);
+							line++;
+							count++;
+						}
+						word[count] = '\0';
+						while((*line) == ' ' || (*line) == '\t')
+							line++;
+						if((*line) == '[')
+						{
+							eCpuRegisters registerSource;
+							eCpuRegisters registerDestination;
+							while((*line) == ' ' || (*line) == '\t')
+								line++;
+							line++;
+							switch((*line) - '0')
 							{
-								while((*line) != ' ' && (*line) != '\t' && (*line) == '\n' && (int)(*line) == EOF && (*line) != '[')
-								{
-									(*word) = (*line);
-									line++;
-									word++;
-								}
-								word = '\0';
-								while((*line) == ' ' || (*line) == '\t')
-									line++;
-								if((*line) == '[')
-								{
-									eCpuRegisters registerSource;
-									eCpuRegisters registerDestination;
-									while((*line) == ' ' || (*line) == '\t')
-										line++;
-									line++;
-									switch((*line) - '0')
-									{
-										case 0: registerSource = r0; break;
-										case 1: registerSource = r1; break;
-										case 2: registerSource = r2; break;
-										case 3: registerSource = r3; break;
-										case 4: registerSource = r4; break;
-										case 5: registerSource = r5; break;
-										case 6: registerSource = r6; break;
-										case 7: registerSource = r7; break;
-									}
-									while((*line) == ' ' || (*line) == '\t')
-										line++;
-									line++;
-									switch((*line) - '0')
-									{
-										case 0: registerDestination = r0; break;
-										case 1: registerDestination = r1; break;
-										case 2: registerDestination = r2; break;
-										case 3: registerDestination = r3; break;
-										case 4: registerDestination = r4; break;
-										case 5: registerDestination = r5; break;
-										case 6: registerDestination = r6; break;
-										case 7: registerDestination = r7; break;
-									}
-									funcParms.matrixDestination = findSymbolByLabel(word);
-									if(funcParms.matrixDestination == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-									funcParms.eMatrixRegRowDestination = registerSource;
-									funcParms.eMatrixRegColumnDestination = registerDestination;
-									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , MatrixAccess);
-								}
-								else
-								{
-									funcParms.symbolDestination = findSymbolByLabel(word);
-									if(funcParms.symbolDestination == NULL)
-											addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
-									funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Direct);
-								}
-								free(word);
+								case 0: registerSource = r0; break;
+								case 1: registerSource = r1; break;
+								case 2: registerSource = r2; break;
+								case 3: registerSource = r3; break;
+								case 4: registerSource = r4; break;
+								case 5: registerSource = r5; break;
+								case 6: registerSource = r6; break;
+								case 7: registerSource = r7; break;
 							}
+							while((*line) == ' ' || (*line) == '\t')
+								line++;
+							line++;
+							switch((*line) - '0')
+							{
+								case 0: registerDestination = r0; break;
+								case 1: registerDestination = r1; break;
+								case 2: registerDestination = r2; break;
+								case 3: registerDestination = r3; break;
+								case 4: registerDestination = r4; break;
+								case 5: registerDestination = r5; break;
+								case 6: registerDestination = r6; break;
+								case 7: registerDestination = r7; break;
+							}
+							funcParms.matrixDestination = findSymbolByLabel(word);
+							if(funcParms.matrixDestination == NULL)
+								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+							funcParms.eMatrixRegRowDestination = registerSource;
+							funcParms.eMatrixRegColumnDestination = registerDestination;
+							funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , MatrixAccess);
+						}
+						else
+						{
+							funcParms.symbolDestination = findSymbolByLabel(word);
+							if(funcParms.symbolDestination == NULL)
+								addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+							funcParametersType = assignTwoCommandParametersType(firstParamAddressingMethod , Direct);
 						}
 					}
 				}
@@ -4235,7 +4249,6 @@ int analizeLineSecTransition(char *line , int lineNum)
 		/*Get command to preform and preform it*/
 		currentCmd = getCmdToPreform(cmdName , funcParametersType);
 		currentCmd.func(funcParms);
-		free(cmdName);
 	}
 	return 0;
 }
@@ -4245,9 +4258,7 @@ cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType)
 {
 	int i;
 	int cmdId;
-	cmd* cmds;
-	cmd cNull;
-
+	cmd* cmds = NULL;
 	/*find the current command array*/
 	for (i=0;i<16;i++)
 	{
@@ -4285,8 +4296,9 @@ cmd getCmdToPreform(char* cmdName , eParametersType funcParametersType)
 		{
 			return (*cmds);
 		}
+		cmds++;
 	}
-	return cNull;
+	return (*cmds);
 
 }
 
