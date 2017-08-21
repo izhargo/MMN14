@@ -10,7 +10,6 @@ STR: .string "ab"
      sub r1,r4
      stop
 	dec M1[r3][8a]
-.entry GT1
 K: .data 2,7
 	.data 
 STR:	.string "cd"

@@ -102,7 +102,7 @@ void printErrorList(Errorptr head)
 	printf("\n");
 	return;	
 }
-
+/*free memory usage by ErrorList*/
 void freeErrorList(Errorptr head){
 	Errorptr p;
 	while (head){
@@ -111,7 +111,7 @@ void freeErrorList(Errorptr head){
 		free(p);	
 	}
 }
-
+/*returns lower-case command if word is a command. Otherwise returs NULL*/
 char *isOpCode(char *word)
 {
 	int i;
@@ -127,6 +127,7 @@ char *isOpCode(char *word)
 	}
 	return NULL;
 }
+/*secure copy of string to a char pointer*/
 char *strdup(char *s){
 	char *p;
 	p = (char *) malloc(strlen(s)+1);
@@ -135,6 +136,7 @@ char *strdup(char *s){
 	}
 	return p;
 }
+/*adds a symbol structure to the end of SymbolTable*/
 void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigned int isAct, unsigned int isExt, unsigned int isMat)  
 {
 	pSymbol temp,p;
@@ -166,7 +168,8 @@ void addToSymbolList(pSymbol *head,pSymbol *last, char *str, int counter,unsigne
 	}		
 
 }
-
+/*returns a pointer to symbol 'x' there's an 'x' in SymbolTable that maintains 
+ labal == x->label*/ 
 pSymbol findSymbolByLabel(char *label)
 {
 	pSymbol currentSymbol = SymbolTable;
@@ -180,7 +183,7 @@ pSymbol findSymbolByLabel(char *label)
 	}
 	return NULL;
 }
-
+/*prints Symbolslist from head to last*/
 void printSymbolList(pSymbol head)
 {
 	pSymbol p;
@@ -193,7 +196,7 @@ void printSymbolList(pSymbol head)
 	printf("\n");
 	return;	
 }
-
+/*free memory usage by SymbolList*/
 void freeSymbolList(pSymbol head){
 	pSymbol p;
 	while (head){
@@ -230,7 +233,7 @@ unsigned int getNumOfOpCode(char *word)
 	}
 	return (unsigned int)NULL;
 }
-
+/*returns 1 if str is consisted of whitespaces (of all kinds) and 0 if not*/
 int isBlank(char *str){
 	int i;	
 	int result = 1;

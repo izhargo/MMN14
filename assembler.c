@@ -34,14 +34,12 @@ int main(int argc, char *argv[])
 		validateFileName(suffix);		
 		fd = handleFileName(fileName);
 		moveOverFileOne(fd);
-		printSymbolList(SymbolTable);
 		printErrorList(errorList);
 		if(!(errorList))
 		{
 			fd = handleFileName(fileName);
 			suffix = strtok(argv[argumentIndex],".");	
 			moveOverFileTwo(fd , suffix);
-			printSymbolList(SymbolTable);
 			printErrorList(errorList);
 			if (errorList) freeErrorList(errorList);
 			if (SymbolTable) freeSymbolList(SymbolTable);

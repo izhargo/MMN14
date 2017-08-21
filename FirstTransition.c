@@ -1,3 +1,11 @@
+/*
+This File Holds all the operations needed for Assembler's first Transition. 
+According to the course's booklet and according the the course forum - 
+in an instruction - there must be space between instruction's name to first parameter. For example: This is legal - ".data -8" ; "MAT5: .mat [2][2] 4,-5,7,9".
+But this isn't legal - ".data-8"; MAT5 .mat[2][2] 4, -5,7,9. 
+Obviously, in commands - this is ok "mov M1[r1][r2], r3".
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +19,7 @@ binWord bin;
 errorType error = NONE;
 
 int flagLabel = 0;
-
+/*an array of structures for handling instructions*/
 opcodeStruct opcodesArray[16]={
 	{0 , "mov", 2},
 	{1 , "cmp" , 2},
@@ -64,10 +72,12 @@ int oneOperandFunc(char *line,int opCode, int lineNum);
 int twoOperandFunc(char *line ,int opCode, int lineNum);
 void noOperand (char *line, int lineNum);
 void analizeLine(char *line, int lineNum);
-/*A function to move over file and analize each line in the file*/
 void moveOverFileOne(FILE* currentFile);
 
-
+/*
+****Assisting Functions****
+*/
+/*if str is consisted by digits - return 1. Otherwise returs 0*/
 int isInteger(char *str){
 	int i;
 	if (strlen(str)==0)	return 0;
@@ -78,7 +88,7 @@ int isInteger(char *str){
 	}
 	return 1;
 }	
-
+/*if str is a legal number parameter (like: 57 -98 +16) - return 1. Otherwise returns 0*/
 int isParam(char *str){
 	char num[MAXWORD];
 	int result = 0;
@@ -92,7 +102,7 @@ int isParam(char *str){
 	} 
 	return result;
 }
-
+/*does an insensitive case string comparison*/ 
 int strcmpci(char *a, char *b){
     int i;
     int result = 0;
@@ -109,7 +119,7 @@ int strcmpci(char *a, char *b){
     return result;
 }
 
-
+/*returns a lower-case register name if str is a register ranged r0-r8. Otherwise return NULL*/
 char *isRegister(char *str){
 	int i;	
 	for (i=0;i<numRegisters;i++){
@@ -120,6 +130,7 @@ char *isRegister(char *str){
 	return NULL;
 }
 
+/*return a lower case instruction name if str is an instrcution. Otherwise returns NULL. str can be lower or upper case*/
 char *isInstruction(char *str){
 	int i;	
 	for (i=0;i<numInstructions;i++){
@@ -129,12 +140,12 @@ char *isInstruction(char *str){
 	}
 	return NULL;
 }
-
+/*adds an error to ErrorList*/
 void addError(errorType e, int lineNumber){
 	error = e;	
 	addToErrorList(&errorList, &errorListLast,e,lineNumber);
 }
-
+/*converts a decimal number to a binary number using bit operations*/
 void numToBin(int num){
 	int i;
 	int mask = 0x01;
@@ -146,7 +157,7 @@ void numToBin(int num){
     }
 	dataArray[DC].mw.word = bin.a;	
 }
-
+/*converts a binary number 'num' to binary number '-num' using bit operations*/ 
 void numToNeg(int num){
 	int m=1;	
 	numToBin(num);
@@ -161,7 +172,7 @@ void numToNeg(int num){
 	bin.a = bin.a^m;
 	dataArray[DC].mw.word = bin.a;
 }
-
+/*adds a decimal number to data array, which consists on binary numbers*/
 void addToDataArray(int num){
 	dataArray[DC].fullReg = 0;
 	if (num>0){
@@ -172,7 +183,7 @@ void addToDataArray(int num){
 	}
 	DC++;
 }
-
+/*handles ".mat" instruction*/
 void matFunc(char *str,int lineNumber){		
 	char *token, *tokenInner;
 	char size1[MAXWORD];
@@ -185,7 +196,7 @@ void matFunc(char *str,int lineNumber){
 		addError(WRONG_MATRIX_SIZE,lineNumber); 
 		return; 	
 	}
-	else if ((isInteger(size1) == 0) || (isInteger(size2) == 0)){
+	else if ((isInteger(size1) == 0) || (isInteger(size2) == 0)){/*matrix size parameters are not numbers*/
 		addError(WRONG_MATRIX_SIZE,lineNumber); 
 		return;
 	}
@@ -193,13 +204,13 @@ void matFunc(char *str,int lineNumber){
 		row = atoi(size1);
 		col = atoi(size2);
 		matSize = col*row;
-		if (((token = strtok (NULL,"\n")) == NULL) || (isBlank(token))){
+		if (((token = strtok (NULL,"\n")) == NULL) || (isBlank(token))){/*insert "0"'s to matrix when there's no parameters as input*/
 			for (i=0;i<matSize;i++){
 				addToDataArray(0);
 			}
 			return;		
 		}	
-		else{
+		else{/*add parameters input to dataarray*/
 			tokenInner = strtok(token, ",");
 			for (i=0;i<matSize;i++){
 				if ((tokenInner != NULL) && (isParam(tokenInner) == 1)){
@@ -219,14 +230,14 @@ void matFunc(char *str,int lineNumber){
 		}
 	}
 }
-		
+/*handles ".string" instruction*/		
 void stringFunc(char *str,int lineNumber){		
 	char *token;
 	char param[MAXWORD];
 	int i,checker,data;   
 	token = strtok (str," ");
 	token = strtok(NULL, "\n");
-	if (token == NULL){
+	if (token == NULL){ /*no parameters*/
 		addError(WRONG_PARAMETER_VALUE,lineNumber);        
 		return;	
 	}
@@ -245,11 +256,11 @@ void stringFunc(char *str,int lineNumber){
 		}   
 	}
 }		
-	
+/*handles ".data" instruction*/	
 void dataFunc(char *str,int lineNumber){		
 	char *token;
 	int data;
-	int checker = 0;
+	int checker = 0;/*checks that at least one legal parameter was given as input*/ 
 	token = strtok (str," ");
     while((token = strtok (NULL,",")) != NULL){			
 		if (isParam(token) == 1){
@@ -267,7 +278,8 @@ void dataFunc(char *str,int lineNumber){
 		return;	
 	}	
 }
-/*function makes a special label validation, different from the one in isLabel, due to requirements*/
+/*handles ".extern" instruction*/
+/*function makes a special label validation, different from the one in isLabel, due to requirements - label doesn't appear on this file*/
 void externFunc(char *str,int lineNumber){
 	char *token, *exLabel;
 	int i = 0;	
@@ -308,7 +320,7 @@ void externFunc(char *str,int lineNumber){
 		}
 	}	
 }
-
+/*check if there's a legal label in the beginning of the line*/
 char *isLabel(char *word, int lineNumber){
 	int i = 1;	
 	if ((isalpha(word[0]) == 0) || (isOpCode(word) != NULL)|| 
@@ -342,7 +354,7 @@ char *isLabel(char *word, int lineNumber){
 		return word;
 	}
 }
-
+/*calculate's a parameter addition to IC if parameter can be of 0,1,2,3 addressing methods*/
 int calcOneOperand0123(char *str, int lineNum){	
 	char *token;
 	char reg1[MAXWORD], reg2[MAXWORD];	
@@ -383,7 +395,7 @@ int calcOneOperand0123(char *str, int lineNum){
 
 	return result;
 }
-
+/*calculate's a parameter addition to IC if parameter can be of 1,2,3 addressing methods*/
 int calcOneOperand123(char *str, int lineNum){	
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
@@ -418,7 +430,7 @@ int calcOneOperand123(char *str, int lineNum){
 	}
 	return result;
 }
-
+/*calculate's a parameter addition to IC if parameter can be of 1,2 addressing methods*/
 int calcOneOperand12(char *str, int lineNum){
 	char *token;	
 	char reg1[MAXWORD], reg2[MAXWORD];	
@@ -454,7 +466,7 @@ int calcOneOperand12(char *str, int lineNum){
 	}
 	return result;
 }
-
+/*handles a command that can have only one operand, calculates its addition to IC */ 
 int oneOperandFunc(char *line,int opCode, int lineNum){
 	char *token;	
 	char op1[MAXWORD];
@@ -481,7 +493,7 @@ int oneOperandFunc(char *line,int opCode, int lineNum){
 	}
 	return result;
 }
-
+/*handles a command that can have two operands, calculates its addition to IC */ 
 int twoOperandFunc(char *line ,int opCode, int lineNum){
 	char *token;		
 	char op1[MAXWORD], op2[MAXWORD];
@@ -527,7 +539,7 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	}
 	return result;
 }
-
+/*handles a command that gets no operands, does validation */ 
 void noOperand (char *line, int lineNum){
 	char *token;	
 	token = strtok(line," ");
@@ -540,12 +552,12 @@ void noOperand (char *line, int lineNum){
 	}
 	return;
 }
-
+/*handles a line of assembly text*/
 void analizeLine(char *line, int lineNum){
 	char *label,*word1,*checker,*restOfLine;	
 	char token[MAXWORD];
 	int opCode, result;
-	if ((isBlank(line)) || (line[0] == ';' )){
+	if ((isBlank(line)) || (line[0] == ';' )){/*line is blank or a remark*/
 		return;	
 	}
     checker = strchr(line,':');
@@ -562,7 +574,7 @@ void analizeLine(char *line, int lineNum){
 		flagLabel = 0;
 	}
 	sscanf(restOfLine, "%s",token);
-	/*Decide whether word is an Order (Must be in lower case charachters) or an Instraction (Could be in lower/upper case) or an input error.*/
+	/*Decide whether token is an Order (Must be in lower case charachters) or an Instraction (Could be in lower/upper case) or an input error.*/
 	if (token[0] == '.'){ /*word should be an instruction*/ 					
 		if (isInstruction(token+1) == NULL){
 			addError(WRONG_INSTRUCTION_NAME,lineNum);						
@@ -594,7 +606,7 @@ void analizeLine(char *line, int lineNum){
 			externFunc(restOfLine,lineNum);
 		}			
 	}
-	else if (isOpCode(token) != NULL){
+	else if (isOpCode(token) != NULL){/* token is a command*/
 		if (flagLabel) addToSymbolList(&SymbolTable, &SymbolTableLast, label, IC, 1, 0, 0);	
 		opCode = getNumOfOpCode(token);
 		if (((opCode>=0) && (opCode<=3)) || (opCode==6)) {

@@ -1,12 +1,9 @@
 .entry LOOP
 
-
-.entry LENGTH
-
 .extern L3
 .extern W
 	MAIN: mov M1[r2][r7],W
-add   r2, STR   
+add   r2, r4   
 K: .data 22
 LOOP	: jmp W
 prn #-5
