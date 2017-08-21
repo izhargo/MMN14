@@ -130,14 +130,16 @@ cmd reds[] =
 {
 	{ONE_REGISTER,redRegisterCmd},
 	{ONE_SYMBOL,redSymbolCmd},
-	{ONE_MATRIX,redMatrixCmd}
+	{ONE_MATRIX,redMatrixCmd},
+	
 };
 
 cmd prns[] =
 {
 	{ONE_REGISTER,prnRegisterCmd},
 	{ONE_SYMBOL,prnSymbolCmd},
-	{ONE_MATRIX,prnMatrixCmd}
+	{ONE_MATRIX,prnMatrixCmd},
+	{ONE_VALUE, prnValueCmd}
 };
 
 cmd jsrs[] =
@@ -3720,7 +3722,7 @@ void addToEntryFile(pSymbol entrySymbol)
 	char* wierdFourNum;
 	fwrite(entrySymbol->label,sizeof(char),strlen(entrySymbol->label),currentEntryFile);
 	fwrite(tabArray,sizeof(char),2,currentEntryFile);
-	wierdFourNum = convertToWeirdFour(IC+1);
+	wierdFourNum = convertToWeirdFour(entrySymbol->address);
 	fwrite(wierdFourNum,sizeof(char),strlen(wierdFourNum),currentEntryFile);
 	fwrite(newLine,sizeof(char),strlen(newLine),currentEntryFile);
 }
