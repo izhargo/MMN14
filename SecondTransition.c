@@ -3711,8 +3711,8 @@ void addToExternFile(pSymbol externSymbol)
 	char* newLine = "\n";
 	char* wierdFourNum;
 	fwrite(externSymbol->label,sizeof(char),strlen(externSymbol->label),currentExternFile);
-	fwrite(tabArray,sizeof(char),2,currentExternFile);
-	wierdFourNum = convertToWeirdFour(IC+1);
+	fwrite(tabArray,sizeof(char),strlen(tabArray),currentExternFile);
+	wierdFourNum = convertToWeirdFour(IC);
 	fwrite(wierdFourNum,sizeof(char),strlen(wierdFourNum),currentExternFile);
 	fwrite(newLine,sizeof(char),strlen(newLine),currentExternFile);
 }
@@ -3723,7 +3723,7 @@ void addToEntryFile(pSymbol entrySymbol)
 	char* newLine = "\n";
 	char* wierdFourNum;
 	fwrite(entrySymbol->label,sizeof(char),strlen(entrySymbol->label),currentEntryFile);
-	fwrite(tabArray,sizeof(char),2,currentEntryFile);
+	fwrite(tabArray,sizeof(char),strlen(tabArray),currentEntryFile);
 	wierdFourNum = convertToWeirdFour(entrySymbol->address);
 	fwrite(wierdFourNum,sizeof(char),strlen(wierdFourNum),currentEntryFile);
 	fwrite(newLine,sizeof(char),strlen(newLine),currentEntryFile);
@@ -3790,8 +3790,10 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 		else
             		startLine[ind++] = (char)fileChar;
 	}
-
-	writeObjectFile();
+	if(!(errorList))
+	{
+		writeObjectFile();
+	}
 }
 
 void writeObjectFile()
@@ -3907,7 +3909,14 @@ int analizeLineSecTransition(char *line , int lineNum)
 			}
 			word[count] = '\0';
 			entrySymbol = findSymbolByLabel(word);
-			addToEntryFile(entrySymbol);
+			if(entrySymbol != NULL)
+			{
+				addToEntryFile(entrySymbol);
+			}
+			else
+			{
+				addToErrorList(&errorList, &errorListLast, LABEL_INPUT_NOT_EXSIST, lineNum);
+			}
 		}
 		/*IC++;*/
 		return 1;
