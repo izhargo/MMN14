@@ -3731,49 +3731,35 @@ void addToEntryFile(pSymbol entrySymbol)
 void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 {
 	/*Create the current extern, entry and object file that related to the current file*/
-	char* currentExternFileName;
-	char* currentObjectFileName;
-	char* currentEntryFileName;
+	char currentExternFileName[MAXFILENAME];
+	char currentObjectFileName[MAXFILENAME];
+	char currentEntryFileName[MAXFILENAME];
 	char startLine[MAXLINE];
 	int fileChar; 
 	
 	int ind = 0;
 	int lineNum = 0;
 	int length = strlen(currentFileName);
-
-	currentExternFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
-	currentEntryFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+4)*sizeof(char)));
-	currentObjectFileName = (char *)(malloc(((sizeof(currentFileName)/sizeof(char))+3)*sizeof(char)));
 	
+
 	while(ind < length)
 	{
-		currentExternFileName[ind] = (*currentFileName);
-		currentEntryFileName[ind] = (*currentFileName);
-		currentObjectFileName[ind] = (*currentFileName);
-		currentFileName++;
+		currentExternFileName[ind] = currentFileName[ind];
+		currentEntryFileName[ind] = currentFileName[ind];
+		currentObjectFileName[ind] = currentFileName[ind];
 		ind++;
 	}
 
-	currentExternFileName[ind] = '.';
-	currentExternFileName[ind+1] = 'e';
-	currentExternFileName[ind+2] = 'x';
-	currentExternFileName[ind+3] = 't';
-	currentExternFileName[ind+4] = '\0';
-
-	currentEntryFileName[ind] = '.';
-	currentEntryFileName[ind+1] = 'e';
-	currentEntryFileName[ind+2] = 'n';
-	currentEntryFileName[ind+3] = 't';
-	currentEntryFileName[ind+4] = '\0';
-
-	currentObjectFileName[ind] = '.';
-	currentObjectFileName[ind+1] = 'o';
-	currentObjectFileName[ind+2] = 'b';
-	currentObjectFileName[ind+3] = '\0';
+	strcat(currentExternFileName,EXTSUFFIX);
+	strcat(currentEntryFileName,ENTSUFFIX);
+	strcat(currentObjectFileName,OBSUFFIX);
 
 	currentExternFile = fopen(currentExternFileName , "w");
 	currentEntryFile = fopen(currentEntryFileName , "w");
 	currentObjectFile = fopen(currentObjectFileName , "w");
+	
+	printf("%s ,%s ,%s\n", currentExternFileName,currentEntryFileName,currentObjectFileName );
+	
 	readdressSymbolTable();
 	IC = 100;
 	ind = 0;
@@ -3891,7 +3877,7 @@ int analizeLineSecTransition(char *line , int lineNum)
 	/*Skip white spaces*/
 	while((*line) == ' ' || (*line) == '\t')
 		line++;
-	
+
 	/*find if this line is an entry or an extern line*/
 	if((strncmp(line,ENTRY,sizeof(ENTRY)/sizeof(char) - 1) == 0) || (strncmp(line,EXTERN,sizeof(EXTERN)/sizeof(char) - 1) == 0)
 		|| (strncmp(line,DATA,sizeof(DATA)/sizeof(char) - 1) == 0) || (strncmp(line,STRING,sizeof(STRING)/sizeof(char) - 1) == 0)

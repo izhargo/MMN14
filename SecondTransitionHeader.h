@@ -1,5 +1,8 @@
 
 #define MAXNUMBERSIZE 20
+#define EXTSUFFIX ".ext"
+#define ENTSUFFIX ".ent"
+#define OBSUFFIX ".ob"
 
 typedef struct parms
 {

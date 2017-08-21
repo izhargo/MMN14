@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 		if(!(errorList))
 		{
 			fd = handleFileName(fileName);
-			suffix = strtok(argv[argumentIndex],".");
+			suffix = strtok(argv[argumentIndex],".");	
 			moveOverFileTwo(fd , suffix);
 			printSymbolList(SymbolTable);
 			printErrorList(errorList);
@@ -65,13 +65,14 @@ void validateFileName(char *token)
 
 FILE *handleFileName(char *filename)
 {
-	FILE *f;	
+	FILE *f;
+	
 	if (!(f = fopen(filename,"r")))
 	{
 		fprintf(stderr,"cannot open file\n");
 		exit(0);
 	} else 
-	{
+	{			
 		return f;
 	}
 }

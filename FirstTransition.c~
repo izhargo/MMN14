@@ -264,7 +264,6 @@ void dataFunc(char *str,int lineNumber){
 	int data;
 	int checker = 0;
 	token = strtok (str," ");
-	if (lineNumber==15) printf("%s\n",token);
     while((token = strtok (NULL,",")) != NULL){			
 		if (isParam(token) == 1){
 			checker = 1;
@@ -352,7 +351,8 @@ char *isLabel(char *word, int lineNumber){
 				i++;
 			}
 		}
-		flagLabel = 1;		
+		flagLabel = 1;
+		if (lineNumber==8) printf ("%s\n",word);		
 		return word;
 	}
 }
