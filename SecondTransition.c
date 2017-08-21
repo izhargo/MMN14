@@ -164,6 +164,7 @@ void readdressSymbolTable()
 {
 	int DC_Index = 0;
 	pSymbol current = SymbolTable;
+	 
 	while(current)
 	{
 		if(current->external == 0 && current->action == 0)
@@ -171,8 +172,9 @@ void readdressSymbolTable()
 			current->address += IC;
 		}
 		current = current->next;
+	
 	}
-	for(DC_Index = 0; DC_Index <= DC; DC_Index++)
+	for(DC_Index = 0; DC_Index < DC; DC_Index++)
 	{
 		cpuFullMemory[DC_Index+IC] = dataArray[DC_Index];
 	}
@@ -3758,9 +3760,9 @@ void moveOverFileTwo(FILE* currentFile , char* currentFileName)
 	currentEntryFile = fopen(currentEntryFileName , "w");
 	currentObjectFile = fopen(currentObjectFileName , "w");
 	
-	printf("%s ,%s ,%s\n", currentExternFileName,currentEntryFileName,currentObjectFileName );
 	
 	readdressSymbolTable();
+	
 	IC = 100;
 	ind = 0;
 	lineNum = 1;
@@ -3873,6 +3875,10 @@ int analizeLineSecTransition(char *line , int lineNum)
 	unsigned int numOfParams;
 	eAddressingMethod firstParamAddressingMethod = Immediate;
 	int count = 0;
+
+	if ((isBlank(line)) || (line[0] == ';' )){
+		return 0;	
+	}	
 
 	/*Skip white spaces*/
 	while((*line) == ' ' || (*line) == '\t')

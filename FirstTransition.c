@@ -52,7 +52,6 @@ void addError(errorType e, int lineNumber);
 void numToBin(int num);
 void numToNeg(int num);
 void addToDataArray(int num);
-int isBlank(char *str);
 void matFunc(char *str,int lineNumber);		
 void stringFunc(char *str,int lineNumber);		
 void dataFunc(char *str,int lineNumber);		
@@ -172,18 +171,6 @@ void addToDataArray(int num){
 		numToNeg(num);
 	}
 	DC++;
-}
-
-int isBlank(char *str){
-	int i;	
-	int result = 1;
-	for (i=0;i<strlen(str);i++){
-		if (!isspace(str[i])){
-			result = 0;
-			break;
-		}	
-	}
-	return result;
 }
 
 void matFunc(char *str,int lineNumber){		

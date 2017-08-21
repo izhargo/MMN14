@@ -231,5 +231,16 @@ unsigned int getNumOfOpCode(char *word)
 	return (unsigned int)NULL;
 }
 
+int isBlank(char *str){
+	int i;	
+	int result = 1;
+	for (i=0;i<strlen(str);i++){
+		if (!isspace(str[i])){
+			result = 0;
+			break;
+		}	
+	}
+	return result;
+}
 
 

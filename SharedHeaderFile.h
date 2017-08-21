@@ -283,5 +283,5 @@ void printSymbolList(pSymbol head);
 void freeSymbolList(pSymbol head);
 unsigned int getNumOfParamsOfOpCode(char *word);
 unsigned int getNumOfOpCode(char *word);
-
+int isBlank(char *str);
 

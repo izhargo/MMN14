@@ -351,8 +351,7 @@ char *isLabel(char *word, int lineNumber){
 				i++;
 			}
 		}
-		flagLabel = 1;
-		if (lineNumber==8) printf ("%s\n",word);		
+		flagLabel = 1;		
 		return word;
 	}
 }

@@ -14,6 +14,7 @@
 #define MAXLINE	80
 #define MAXWORD 30
 #define SIZEARRAY 100
+#define MAXFILENAME 15
 
 #define ENTRY ".entry"
 #define EXTERN ".extern"
