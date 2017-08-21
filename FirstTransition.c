@@ -220,13 +220,13 @@ void matFunc(char *str,int lineNumber){
 					addToDataArray(data);
 				}
 				else{
-					addError(WRONG_MATRIX_PARAMETER_VALUE,lineNumber);        
+					addError(WRONG_MATRIX_INPUT,lineNumber);        
 					return;
 				}
 				tokenInner = strtok(NULL, ",");
 			}
 			if (tokenInner){
-				addError(WRONG_MATRIX_PARAMETER_VALUE,lineNumber);        
+				addError(WRONG_MATRIX_INPUT,lineNumber);        
 				return;			
 			}
 		}
@@ -262,9 +262,11 @@ void stringFunc(char *str,int lineNumber){
 void dataFunc(char *str,int lineNumber){		
 	char *token;
 	int data;
+	int checker = 0;
 	token = strtok (str," ");
     while((token = strtok (NULL,",")) != NULL){			
 		if (isParam(token) == 1){
+			checker = 1;
 			data = atoi(token);
 			addToDataArray(data);
 		}
@@ -272,6 +274,10 @@ void dataFunc(char *str,int lineNumber){
 			addError(WRONG_PARAMETER_VALUE,lineNumber);        
 			return;
 		}
+	}
+	if (checker == 0){
+		addError(NO_INPUT_DATA,lineNumber);        
+		return;	
 	}	
 }
 /*function makes a special label validation, different from the one in isLabel, due to requirements*/

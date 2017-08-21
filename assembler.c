@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
 		validateFileName(suffix);		
 		fd = handleFileName(fileName);
 		moveOverFileOne(fd);
+		printSymbolList(SymbolTable);
 		printErrorList(errorList);
 		if(!(errorList))
 		{
