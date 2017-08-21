@@ -13,22 +13,22 @@ errorType error = NONE;
 int flagLabel = 0;
 
 opcodeStruct opcodesArray[16]={
-	{0 , "mov"},
-	{1 , "cmp"},
-	{2 , "add"},
-	{3 , "sub"},
-	{4 , "not"},
-	{5 , "clr"},
-	{6 , "lea"},
-	{7 , "inc"},
-	{8 , "dec"},
-	{9 , "jmp"},
-	{10 , "bne"},
-	{11 , "red"},
-	{12 , "prn"},
-	{13 , "jsr"},
-	{14 , "rts"},
-	{15 , "stop"},
+	{0 , "mov", 2},
+	{1 , "cmp" , 2},
+	{2 , "add", 2},
+	{3 , "sub", 2},
+	{4 , "not", 1},
+	{5 , "clr", 1},
+	{6 , "lea", 2},
+	{7 , "inc", 1},
+	{8 , "dec", 1},
+	{9 , "jmp", 1},
+	{10 , "bne", 1},
+	{11 , "red", 1},
+	{12 , "prn", 1},
+	{13 , "jsr", 1},
+	{14 , "rts", 0},
+	{15 , "stop", 0},
 };
 
 char *instructions[numInstructions] = {"data", "string", "mat", "entry", "extern"};
@@ -317,36 +317,45 @@ void externFunc(char *str,int lineNumber){
 }
 
 char *isLabel(char *word, int lineNumber){
-	int i = 1;	
-	if ((isalpha(word[0]) == 0) || (isOpCode(word) != NULL)|| 
-		(isRegister(word) != NULL) || (isInstruction(word) != NULL)){
-		addError(WRONG_INPUT_IN_LABEL,lineNumber);  		
-		flagLabel = 0;
-		return NULL;       	
-	}
-	else if (findSymbolByLabel(word) != NULL){ 
-		addError(SYMBOL_ALREADY_IN_THE_TABLE,lineNumber);		     
-		flagLabel = 0;
-		return NULL;
-	}
-	else if (strlen(word) > MAXLABEL){
-		addError(LABEL_INPUT_TOO_LONG,lineNumber);		    
-		flagLabel = 0;
-		return NULL;
-	}	 
-	else{
-		while (word[i]){
-			if (isalnum(word[i]) == 0){
-				addError(WRONG_INPUT_IN_LABEL,lineNumber);			
-				flagLabel = 0;
-				return NULL;			
-			} 
-			else{
-				i++;
-			}
+	char *str;	
+	int i = 1;
+	str = (char*) malloc(sizeof(word));	
+	if ((sscanf(word, "%s" ,str)) > 0){
+		if ((isalpha(str[0]) == 0) || (isOpCode(str) != NULL)|| 
+			(isRegister(str) != NULL) || (isInstruction(str) != NULL)){
+			addError(WRONG_INPUT_IN_LABEL,lineNumber);  		
+			flagLabel = 0;
+			return NULL;       	
 		}
-		flagLabel = 1;		
-		return word;
+		else if (findSymbolByLabel(str) != NULL){ 
+			addError(SYMBOL_ALREADY_IN_THE_TABLE,lineNumber);		     
+			flagLabel = 0;
+			return NULL;
+		}
+		else if (strlen(str) > MAXLABEL){
+			addError(LABEL_INPUT_TOO_LONG,lineNumber);		    
+			flagLabel = 0;
+			return NULL;
+		}	 
+		else{
+			while (str[i]){
+				if (isalnum(str[i]) == 0){
+					addError(WRONG_INPUT_IN_LABEL,lineNumber);			
+					flagLabel = 0;
+					return NULL;			
+				} 
+				else{
+					i++;
+				}
+			}
+			flagLabel = 1;		
+			return str;
+		}
+	}
+	else{
+		addError(WRONG_INPUT_IN_LABEL,lineNumber);			
+		flagLabel = 0;
+		return NULL;		
 	}
 }
 
@@ -530,7 +539,7 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	}	
 	/* a special check for two registers*/
 	if ((isRegister(op1)) && (isRegister(op2)) && (opCode !=6)){
-		result += 1;	
+		result -= 1;	
 	}
 	return result;
 }

@@ -15,11 +15,11 @@
 #define MAXWORD 30
 #define SIZEARRAY 100
 
-#define ENTRY ".ENTRY"
-#define EXTERN ".EXTERN"
-#define DATA ".DATA"
-#define STRING ".STRING"
-#define MAT ".MAT"
+#define ENTRY ".entry"
+#define EXTERN ".extern"
+#define DATA ".data"
+#define STRING ".string"
+#define MAT ".mat"
 
 
 typedef union commandBitField

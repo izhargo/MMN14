@@ -10,7 +10,6 @@
 
 int main(int argc, char *argv[])
 {
-	int i;	
 	FILE *fd;	
 	char *suffix;
 	char *fileName;
@@ -35,9 +34,6 @@ int main(int argc, char *argv[])
 		validateFileName(suffix);		
 		fd = handleFileName(fileName);
 		moveOverFileOne(fd);
-		for (i=0;i<DC;i++){
-			printf("%d\n", dataArray[i].mw.word);
-		}
 		printErrorList(errorList);
 		if(!(errorList))
 		{

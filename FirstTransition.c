@@ -13,22 +13,22 @@ errorType error = NONE;
 int flagLabel = 0;
 
 opcodeStruct opcodesArray[16]={
-	{0 , "mov"},
-	{1 , "cmp"},
-	{2 , "add"},
-	{3 , "sub"},
-	{4 , "not"},
-	{5 , "clr"},
-	{6 , "lea"},
-	{7 , "inc"},
-	{8 , "dec"},
-	{9 , "jmp"},
-	{10 , "bne"},
-	{11 , "red"},
-	{12 , "prn"},
-	{13 , "jsr"},
-	{14 , "rts"},
-	{15 , "stop"},
+	{0 , "mov", 2},
+	{1 , "cmp" , 2},
+	{2 , "add", 2},
+	{3 , "sub", 2},
+	{4 , "not", 1},
+	{5 , "clr", 1},
+	{6 , "lea", 2},
+	{7 , "inc", 1},
+	{8 , "dec", 1},
+	{9 , "jmp", 1},
+	{10 , "bne", 1},
+	{11 , "red", 1},
+	{12 , "prn", 1},
+	{13 , "jsr", 1},
+	{14 , "rts", 0},
+	{15 , "stop", 0},
 };
 
 char *instructions[numInstructions] = {"data", "string", "mat", "entry", "extern"};
@@ -530,7 +530,7 @@ int twoOperandFunc(char *line ,int opCode, int lineNum){
 	}	
 	/* a special check for two registers*/
 	if ((isRegister(op1)) && (isRegister(op2)) && (opCode !=6)){
-		result += 1;	
+		result -= 1;	
 	}
 	return result;
 }
